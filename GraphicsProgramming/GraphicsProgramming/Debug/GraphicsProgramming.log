@@ -1,0 +1,6 @@
+﻿  OpenGL.cpp
+C:\Users\n017380n\source\repos\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(48,14): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\n017380n\source\repos\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(49,14): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\n017380n\source\repos\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(53,14): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\n017380n\source\repos\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(54,14): warning C4305: '-=': truncation from 'double' to 'float'
+  GraphicsProgramming.vcxproj -> C:\Users\n017380n\source\repos\GraphicsProgramming\Debug\GraphicsProgramming.exe
