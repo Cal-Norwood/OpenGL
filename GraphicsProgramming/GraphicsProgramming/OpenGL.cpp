@@ -6,12 +6,19 @@
 #include "GL\freeglut.h"
 #include <chrono>
 #include <thread>
+#include <iostream>
+#include <random>
 using namespace std;
 using namespace chrono;
 
-float x = 0.5;
-float y = 0.5;
-bool zoomIn = true;
+float fx = 0.2;
+float bx = -fx;
+
+float ty = fx;
+float by = -fx;
+
+bool moveRight = true;
+bool moveUp = true;
 
 OpenGL::OpenGL(int argc, char* argv[])
 {
@@ -25,6 +32,17 @@ OpenGL::OpenGL(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
+	random_device rd;
+	uniform_real_distribution<float> dist(-0.5, 1);
+	float offset = dist(rd);
+	cout << offset;
+	fx = offset;
+	bx = offset - 0.5;
+
+	offset = dist(rd);
+	cout << offset;
+	ty = offset;
+	by = offset - 0.5;
 	OpenGL* game = new OpenGL(argc, argv);
 
 	return 0;
@@ -42,26 +60,46 @@ void OpenGL::Display()
 	glClear(GL_COLOR_BUFFER_BIT);
 	DrawPolygon();
 	glFlush();
-
-	if (zoomIn == true)
+	if (moveRight == true)
 	{
-		x += 0.0001;
-		y += 0.0001;
+		fx += 0.0001;
+		bx += 0.0001;
 	}
 	else
 	{
-		x -= 0.0001;
-		y -= 0.0001;
+		fx -= 0.0001;
+		bx -= 0.0001;
 	}
 
-	if (x >= 1 || y >= 1)
+	if (moveUp == true)
 	{
-		zoomIn = false;
+		ty += 0.00009;
+		by += 0.00009;
+	}
+	else
+	{
+		ty -= 0.00009;
+		by -= 0.00009;
 	}
 
-	if (x <= 0 || y <= 0)
+	if (fx >= 1 )
 	{
-		zoomIn = true;
+		moveRight = false;
+	}
+
+	if (bx < -1)
+	{
+		moveRight = true;
+	}
+
+	if (ty >= 1)
+	{
+		moveUp = false;
+	}
+
+	if (by <= -1)
+	{
+		moveUp = true;
 	}
 
 	glutPostRedisplay();
@@ -72,13 +110,13 @@ void OpenGL::DrawPolygon()
 	glBegin(GL_POLYGON);
 	{
 		glColor4f(1, 0, 0, 0);
-		glVertex2f(-x, y);
+		glVertex2f(bx, ty);
 		glColor4f(0, 1, 0, 0);
-		glVertex2f(x, y);
+		glVertex2f(fx, ty);
 		glColor4f(0, 0, 1, 0);
-		glVertex2f(x, -y);
-		glColor4f(0.75, 0.5, 0.5, 1);
-		glVertex2f(-x, -y);
+		glVertex2f(fx, by);
+		glColor4f(0, 0, 0, 1);
+		glVertex2f(bx, by);
 		glEnd();
 	}
 }

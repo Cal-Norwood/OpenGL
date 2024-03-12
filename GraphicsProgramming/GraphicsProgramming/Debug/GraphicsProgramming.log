@@ -1,6 +1,13 @@
 ﻿  OpenGL.cpp
-C:\Users\n017380n\source\repos\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(48,14): warning C4305: '+=': truncation from 'double' to 'float'
-C:\Users\n017380n\source\repos\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(49,14): warning C4305: '+=': truncation from 'double' to 'float'
-C:\Users\n017380n\source\repos\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(53,14): warning C4305: '-=': truncation from 'double' to 'float'
-C:\Users\n017380n\source\repos\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(54,14): warning C4305: '-=': truncation from 'double' to 'float'
-  GraphicsProgramming.vcxproj -> C:\Users\n017380n\source\repos\GraphicsProgramming\Debug\GraphicsProgramming.exe
+C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(14,10): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(40,14): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(45,14): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(65,15): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(66,15): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(70,15): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(71,15): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(76,16): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(77,16): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(81,16): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(82,16): warning C4305: '-=': truncation from 'double' to 'float'
+  GraphicsProgramming.vcxproj -> C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\Debug\GraphicsProgramming.exe
