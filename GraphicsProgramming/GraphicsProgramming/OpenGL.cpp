@@ -8,6 +8,8 @@
 #include <thread>
 #include <iostream>
 #include <random>
+#define _USE_MATH_DEFINES
+#include <math.h>
 using namespace std;
 using namespace chrono;
 
@@ -16,6 +18,8 @@ float bx = -fx;
 
 float ty = fx;
 float by = -fx;
+
+float angle;
 
 bool moveRight = true;
 bool moveUp = true;
@@ -32,6 +36,7 @@ OpenGL::OpenGL(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
+	glEnable(GL_DEPTH_TEST);
 	random_device rd;
 	uniform_real_distribution<float> dist(-0.5, 1);
 	float offset = dist(rd);
@@ -58,9 +63,11 @@ OpenGL::~OpenGL(void)
 void OpenGL::Display()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	DrawPolygon();
+	glDepthFunc(GL_LESS);
 	glFlush();
-	if (moveRight == true)
+	/*if (moveRight == true)
 	{
 		fx += 0.0001;
 		bx += 0.0001;
@@ -100,23 +107,88 @@ void OpenGL::Display()
 	if (by <= -1)
 	{
 		moveUp = true;
-	}
+	}*/
+
+	glRotatef(0.001, 1, 1, 1);
 
 	glutPostRedisplay();
 }
 
 void OpenGL::DrawPolygon()
 {
-	glBegin(GL_POLYGON);
+	glPointSize(10);
+	glBegin(GL_LINE_LOOP);
 	{
-		glColor4f(1, 0, 0, 0);
-		glVertex2f(bx, ty);
+		/*glColor4f(1, 0, 0, 0);
+		glVertex3f(bx, ty);
 		glColor4f(0, 1, 0, 0);
-		glVertex2f(fx, ty);
+		glVertex3f(fx, ty);
 		glColor4f(0, 0, 1, 0);
-		glVertex2f(fx, by);
+		glVertex3f(fx, by);
 		glColor4f(0, 0, 0, 1);
-		glVertex2f(bx, by);
+		glVertex3f(bx, by);*/
+
+		glColor4f(1, 0, 0, 0);
+		glVertex3f(0.5, 0.5, 0.5);
+		glVertex3f(-0.5, 0.5, 0.5);
+		glVertex3f(-0.5, -0.5, 0.5);
+		glVertex3f(0.5, -0.5, 0.5);
+
+		glEnd();
+	}
+
+	glBegin(GL_LINE_LOOP);
+	{
+		glColor4f(0, 1, 0, 0);
+		glVertex3f(0.5, -0.5, -0.5);
+		glVertex3f(-0.5, -0.5, -0.5);
+		glVertex3f(-0.5, 0.5, -0.5);
+		glVertex3f(0.5, 0.5, -0.5);
+
+		glEnd();
+	}
+
+	glBegin(GL_LINE_LOOP);
+	{
+		glColor4f(0, 0, 1, 0);
+		glVertex3f(0.5, 0.5, 0.5);
+		glVertex3f(0.5, 0.5, -0.5);
+		glVertex3f(0.5, -0.5, -0.5);
+		glVertex3f(0.5, -0.5, 0.5);
+
+		glEnd();
+	}
+
+	glBegin(GL_LINE_LOOP);
+	{
+		glColor4f(1, 0, 1, 0);
+		glVertex3f(-0.5, 0.5, 0.5);
+		glVertex3f(-0.5, 0.5, -0.5);
+		glVertex3f(-0.5, -0.5, -0.5);
+		glVertex3f(-0.5, -0.5, 0.5);
+
+		glEnd();
+	}
+
+	glBegin(GL_LINE_LOOP);
+	{
+		glColor4f(1, 1, 1, 0);
+		glVertex3f(0.5, -0.5, 0.5);
+		glVertex3f(-0.5, -0.5, 0.5);
+		glVertex3f(-0.5, -0.5, -0.5);
+		glVertex3f(0.5, -0.5, -0.5);
+
+		glEnd();
+	}
+
+	glBegin(GL_LINE_LOOP);
+	{
+		glColor4f(1, 1, 0, 0);
+		glVertex3f(0.5, 0.5, 0.5);
+		glVertex3f(-0.5, 0.5, 0.5);
+		glVertex3f(-0.5, 0.5, -0.5);
+		glVertex3f(0.5, 0.5, -0.5);
+
 		glEnd();
 	}
 }
