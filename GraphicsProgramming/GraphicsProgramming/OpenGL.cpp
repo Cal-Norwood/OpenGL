@@ -32,18 +32,19 @@ OpenGL::OpenGL(int argc, char* argv[])
 	glutInitWindowSize(800, 800);
 	glutCreateWindow("OpenGL Program");
 	glutDisplayFunc(GLUTCallbacks::Display);
-	glutMainLoop();
-}
 
-int main(int argc, char* argv[])
-{
-	gluPerspective(45, 1/1, 0.1, 10);
+	gluPerspective(90, 1 / 1, 0.1, 10);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
+	glutMainLoop();
+}
+
+int main(int argc, char* argv[])
+{
 	random_device rd;
 	uniform_real_distribution<float> dist(-0.5, 1);
 	float offset = dist(rd);
@@ -58,11 +59,6 @@ int main(int argc, char* argv[])
 	OpenGL* game = new OpenGL(argc, argv);
 
 	return 0;
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glutMainLoop();
 }
 
 OpenGL::~OpenGL(void)
