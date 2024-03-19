@@ -13,6 +13,7 @@
 using namespace std;
 using namespace chrono;
 
+float rotation = 0;
 float fx = 0.2;
 float bx = -fx;
 
@@ -36,7 +37,13 @@ OpenGL::OpenGL(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
+	gluPerspective(45, 1/1, 0.1, 10);
+	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH);
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
 	random_device rd;
 	uniform_real_distribution<float> dist(-0.5, 1);
 	float offset = dist(rd);
@@ -52,6 +59,9 @@ int main(int argc, char* argv[])
 
 	return 0;
 
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
 	glutMainLoop();
 }
 
@@ -62,80 +72,31 @@ OpenGL::~OpenGL(void)
 
 void OpenGL::Display()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	DrawPolygon();
-	glDepthFunc(GL_LESS);
+	DrawPolygon1();
+
 	glFlush();
-	/*if (moveRight == true)
-	{
-		fx += 0.0001;
-		bx += 0.0001;
-	}
-	else
-	{
-		fx -= 0.0001;
-		bx -= 0.0001;
-	}
 
-	if (moveUp == true)
-	{
-		ty += 0.00009;
-		by += 0.00009;
-	}
-	else
-	{
-		ty -= 0.00009;
-		by -= 0.00009;
-	}
-
-	if (fx >= 1 )
-	{
-		moveRight = false;
-	}
-
-	if (bx < -1)
-	{
-		moveRight = true;
-	}
-
-	if (ty >= 1)
-	{
-		moveUp = false;
-	}
-
-	if (by <= -1)
-	{
-		moveUp = true;
-	}*/
-
-	glRotatef(0.001, 1, 1, 1);
-
+	rotation += 0.01;
 	glutPostRedisplay();
 }
 
 void OpenGL::DrawPolygon()
 {
+	glPushMatrix();
+	glRotatef(rotation, 1, 1, 1);
+
 	glPointSize(10);
-
-	glBegin(GL_POLYGON);
-	{
-		glColor4f(1, 0, 0, 0);
-		glVertex3f(10, 5, -10);
-		glVertex3f(-10, 5, -10);
-		glVertex3f(-10, -5, -10);
-		glVertex3f(10, -5, -10);
-
-		glEnd();
-	}
 
 	glBegin(GL_LINE_LOOP);
 	{
 		glColor4f(1, 0, 0, 0);
-		glVertex3f(0.5, 0.5, 0.5);
-		glVertex3f(-0.5, 0.5, 0.5);
-		glVertex3f(-0.5, -0.5, 0.5);
-		glVertex3f(0.5, -0.5, 0.5);
+		glVertex3f(0.05, 0.05, 0.05);
+		glVertex3f(-0.05, 0.05, 0.05);
+		glVertex3f(-0.05, -0.05, 0.05);
+		glVertex3f(0.05, -0.05, 0.05);
 
 		glEnd();
 	}
@@ -143,10 +104,10 @@ void OpenGL::DrawPolygon()
 	glBegin(GL_LINE_LOOP);
 	{
 		glColor4f(0, 1, 0, 0);
-		glVertex3f(0.5, -0.5, -0.5);
-		glVertex3f(-0.5, -0.5, -0.5);
-		glVertex3f(-0.5, 0.5, -0.5);
-		glVertex3f(0.5, 0.5, -0.5);
+		glVertex3f(0.05, -0.05, -0.05);
+		glVertex3f(-0.05, -0.05, -0.05);
+		glVertex3f(-0.05, 0.05, -0.05);
+		glVertex3f(0.05, 0.05, -0.05);
 
 		glEnd();
 	}
@@ -154,10 +115,10 @@ void OpenGL::DrawPolygon()
 	glBegin(GL_LINE_LOOP);
 	{
 		glColor4f(0, 0, 1, 0);
-		glVertex3f(0.5, 0.5, 0.5);
-		glVertex3f(0.5, 0.5, -0.5);
-		glVertex3f(0.5, -0.5, -0.5);
-		glVertex3f(0.5, -0.5, 0.5);
+		glVertex3f(0.05, 0.05, 0.05);
+		glVertex3f(0.05, 0.05, -0.05);
+		glVertex3f(0.05, -0.05, -0.05);
+		glVertex3f(0.05, -0.05, 0.05);
 
 		glEnd();
 	}
@@ -165,10 +126,10 @@ void OpenGL::DrawPolygon()
 	glBegin(GL_LINE_LOOP);
 	{
 		glColor4f(1, 0, 1, 0);
-		glVertex3f(-0.5, 0.5, 0.5);
-		glVertex3f(-0.5, 0.5, -0.5);
-		glVertex3f(-0.5, -0.5, -0.5);
-		glVertex3f(-0.5, -0.5, 0.5);
+		glVertex3f(-0.05, 0.05, 0.05);
+		glVertex3f(-0.05, 0.05, -0.05);
+		glVertex3f(-0.05, -0.05, -0.05);
+		glVertex3f(-0.05, -0.05, 0.05);
 
 		glEnd();
 	}
@@ -176,10 +137,10 @@ void OpenGL::DrawPolygon()
 	glBegin(GL_LINE_LOOP);
 	{
 		glColor4f(1, 1, 1, 0);
-		glVertex3f(0.5, -0.5, 0.5);
-		glVertex3f(-0.5, -0.5, 0.5);
-		glVertex3f(-0.5, -0.5, -0.5);
-		glVertex3f(0.5, -0.5, -0.5);
+		glVertex3f(0.05, -0.05, 0.05);
+		glVertex3f(-0.05, -0.05, 0.05);
+		glVertex3f(-0.05, -0.05, -0.05);
+		glVertex3f(0.05, -0.05, -0.05);
 
 		glEnd();
 	}
@@ -187,11 +148,31 @@ void OpenGL::DrawPolygon()
 	glBegin(GL_LINE_LOOP);
 	{
 		glColor4f(1, 1, 0, 0);
-		glVertex3f(0.5, 0.5, 0.5);
-		glVertex3f(-0.5, 0.5, 0.5);
-		glVertex3f(-0.5, 0.5, -0.5);
-		glVertex3f(0.5, 0.5, -0.5);
+		glVertex3f(0.05, 0.05, 0.05);
+		glVertex3f(-0.05, 0.05, 0.05);
+		glVertex3f(-0.05, 0.05, -0.05);
+		glVertex3f(0.05, 0.05, -0.05);
 
 		glEnd();
 	}
+
+	glPopMatrix();
+}
+
+void OpenGL::DrawPolygon1() 
+{
+	glPushMatrix();
+
+	glBegin(GL_QUADS);
+	{
+		glColor4f(1, 0, 0, 0);
+		glVertex3f(0.9, 0.75, -1);
+		glVertex3f(-0.9, 0.75, -1);
+		glVertex3f(-0.9, -0.75, -1);
+		glVertex3f(0.9, -0.75, -1);
+
+		glEnd();
+	}
+
+	glPopMatrix();
 }
