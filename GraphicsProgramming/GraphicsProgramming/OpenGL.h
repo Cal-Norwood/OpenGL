@@ -15,4 +15,8 @@ public:
 
 	   void DrawPolygon();
 	   void DrawPolygon1();
+	   void DrawPolygon2();
+	   void DrawPolygon3();
+	   void DrawPolygon4();
+	   void DrawPolygon5();
 };
