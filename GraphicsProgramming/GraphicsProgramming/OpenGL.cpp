@@ -117,17 +117,20 @@ void OpenGL::Display()
 void OpenGL::DrawPolygon()
 {
 	glPointSize(10);
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 0, 0, 0);
+		glVertex3f(10, 5, -10);
+		glVertex3f(-10, 5, -10);
+		glVertex3f(-10, -5, -10);
+		glVertex3f(10, -5, -10);
+
+		glEnd();
+	}
+
 	glBegin(GL_LINE_LOOP);
 	{
-		/*glColor4f(1, 0, 0, 0);
-		glVertex3f(bx, ty);
-		glColor4f(0, 1, 0, 0);
-		glVertex3f(fx, ty);
-		glColor4f(0, 0, 1, 0);
-		glVertex3f(fx, by);
-		glColor4f(0, 0, 0, 1);
-		glVertex3f(bx, by);*/
-
 		glColor4f(1, 0, 0, 0);
 		glVertex3f(0.5, 0.5, 0.5);
 		glVertex3f(-0.5, 0.5, 0.5);

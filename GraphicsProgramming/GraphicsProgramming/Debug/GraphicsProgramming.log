@@ -1,6 +1,9 @@
-﻿  OpenGL.cpp
+﻿C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Microsoft\VC\v170\Microsoft.CppClean.targets(77,5): warning : Access to the path 'c:\users\n017380n\documents\github\opengl\graphicsprogramming\debug\graphicsprogramming.exe' is denied.
+  GLUTCallbacks.cpp
+  OpenGL.cpp
 C:\Users\n017380n\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(16,10): warning C4305: 'initializing': truncation from 'double' to 'float'
 C:\Users\n017380n\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(45,14): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 C:\Users\n017380n\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(50,14): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 C:\Users\n017380n\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(112,12): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-  GraphicsProgramming.vcxproj -> C:\Users\n017380n\Documents\GitHub\OpenGL\GraphicsProgramming\Debug\GraphicsProgramming.exe
+  Generating Code...
+LINK : fatal error LNK1104: cannot open file 'C:\Users\n017380n\Documents\GitHub\OpenGL\GraphicsProgramming\Debug\GraphicsProgramming.exe'
