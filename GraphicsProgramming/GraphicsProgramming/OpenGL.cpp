@@ -14,18 +14,9 @@
 using namespace std;
 using namespace chrono;
 
-float camRoll = 0;
-float camYaw = 1;
-float camPitch = -1;
-
-float camPosX = 0;
-float camPosY = 1;
-float camPosZ = 10;
-
-float sensitivity = 0.5f;
-
-float mouseX = 0;
-float mouseY = 0;
+float cameraPosX = 0;
+float cameraPosY = 0;
+float cameraPosZ = 0;
 
 float rotation = 0;
 float fx = 0.2;
@@ -39,45 +30,26 @@ float angle;
 bool moveRight = true;
 bool moveUp = true;
 
-void MouseInput(int x, int y)
+void KeyboardInput(unsigned char key, int x, int y)
 {
-	mouseX = (x - 800 / 2) * 0.01;
-	mouseY = (y - 800 / 2) * 0.01;
-
-	camRoll = sin(mouseX);
-	camYaw = sin(mouseY);
-	camPitch = -cos(mouseX);
-
-	if (camYaw * TO_RADIANS > 60 || camYaw * TO_RADIANS < -60) 
-	{
-		camYaw = 60;
-	}
-}
-
-void KeyInput(unsigned char key, int x, int y) 
-{
-	float speed = 0.5f;
-
 	switch (key)
 	{
+	case 'w':
+		cameraPosZ += 0.001f;
+		break;
+
 	case 'a':
-		camPosX += camPitch * speed;
-		camPosZ -= camRoll * speed;
+		cameraPosX += 0.001f;
+		cout << cameraPosX << endl;
 		break;
 
 	case 'd':
-		camPosX -= camPitch * speed;
-		camPosZ += camRoll * speed;
-		break;
-
-	case 'w':
-		camPosX += camPitch * speed;
-		camPosZ += camRoll * speed;
+		cameraPosX -= 0.001f;
+		cout << cameraPosX << endl;
 		break;
 
 	case 's':
-		camPosX -= camPitch * speed;
-		camPosZ -= camRoll * speed;
+		cameraPosZ -= 0.001f;
 		break;
 	}
 }
@@ -95,10 +67,8 @@ OpenGL::OpenGL(int argc, char* argv[])
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
-	
-	glutKeyboardFunc(KeyInput);
-	glutPassiveMotionFunc(MouseInput);
 
+	glutKeyboardFunc(KeyboardInput);
 	glutMainLoop();
 }
 
@@ -107,12 +77,10 @@ int main(int argc, char* argv[])
 	random_device rd;
 	uniform_real_distribution<float> dist(-0.5, 1);
 	float offset = dist(rd);
-	cout << offset;
 	fx = offset;
 	bx = offset - 0.5;
 
 	offset = dist(rd);
-	cout << offset;
 	ty = offset;
 	by = offset - 0.5;
 	OpenGL* game = new OpenGL(argc, argv);
@@ -120,16 +88,11 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-OpenGL::~OpenGL(void)
-{
-
-}
-
 void OpenGL::Display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//gluLookAt(camPosX, camPosY, camPosZ, camPosX + camRoll, camPosY - camYaw, camPosZ + camPitch, 0, camPosY, 0);
+	glTranslatef(cameraPosX, cameraPosY, cameraPosZ);
 
 	DrawPolygon();
 	DrawPolygon1();
