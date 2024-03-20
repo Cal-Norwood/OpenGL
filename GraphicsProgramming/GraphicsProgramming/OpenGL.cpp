@@ -18,6 +18,15 @@ float cameraPosX = 0;
 float cameraPosY = 0;
 float cameraPosZ = 0;
 
+float horizontal = 0;
+float vertical = 0;
+float sensitivity = 0.01;
+
+bool isWPressed = false;
+bool isAPressed = false;
+bool isSPressed = false;
+bool isDPressed = false;
+
 float rotation = 0;
 float fx = 0.2;
 float bx = -fx;
@@ -30,28 +39,95 @@ float angle;
 bool moveRight = true;
 bool moveUp = true;
 
-void KeyboardInput(unsigned char key, int x, int y)
+void KeyboardInputDown(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
 	case 'w':
-		cameraPosZ += 0.001f;
+		isWPressed = true;
 		break;
 
 	case 'a':
-		cameraPosX += 0.001f;
-		cout << cameraPosX << endl;
+		isAPressed = true;
 		break;
 
 	case 'd':
-		cameraPosX -= 0.001f;
-		cout << cameraPosX << endl;
+		isDPressed = true;
 		break;
 
 	case 's':
-		cameraPosZ -= 0.001f;
+		isSPressed = true;
 		break;
 	}
+}
+
+void KeyboardInputUp(unsigned char key, int x, int y)
+{
+	switch (key)
+	{
+	case 'w':
+		isWPressed = false;
+		break;
+
+	case 'a':
+		isAPressed = false;
+		break;
+
+	case 'd':
+		isDPressed = false;
+		break;
+
+	case 's':
+		isSPressed = false;
+		break;
+	}
+}
+
+void MouseInput(int x, int y) 
+{
+	horizontal = x * sensitivity;
+	vertical = x * sensitivity;
+
+	cout << x * sensitivity << endl;
+	//glRotatef(horizontal, 0.0f, 1.0f, 0.0f);
+	//glRotatef(vertical, 1.0f, 0.0f, 0.0f);
+}
+
+void Update(int time) 
+{
+	glutTimerFunc(time, Update, time);
+
+	if (isWPressed == true) 
+	{
+		cameraPosZ = 0.1f;
+	} 
+
+	if (isAPressed == true)
+	{
+		cameraPosX = 0.2f;
+	}
+
+	if (isDPressed == true)
+	{
+		cameraPosX = -0.2f;
+	}
+
+	if (isSPressed == true)
+	{
+		cameraPosZ = -0.1f;
+	}
+
+	if (isDPressed == false && isAPressed == false)
+	{
+		cameraPosX = 0;
+	}
+
+	if (isWPressed == false && isSPressed == false)
+	{
+		cameraPosZ = 0;
+	}
+
+	glutPostRedisplay();
 }
 
 OpenGL::OpenGL(int argc, char* argv[])
@@ -63,12 +139,16 @@ OpenGL::OpenGL(int argc, char* argv[])
 	glutCreateWindow("OpenGL Program");
 	glutDisplayFunc(GLUTCallbacks::Display);
 
-	gluPerspective(120, 1 / 1, 0.1, 10);
+	gluPerspective(120, 1 / 1, 0.1, 100);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
 
-	glutKeyboardFunc(KeyboardInput);
+	glutKeyboardFunc(KeyboardInputDown);
+	glutKeyboardUpFunc(KeyboardInputUp);
+	glutPassiveMotionFunc(MouseInput);
+	glutIgnoreKeyRepeat(1);
+	Update(1000 / 60);
 	glutMainLoop();
 }
 
@@ -84,14 +164,13 @@ int main(int argc, char* argv[])
 	ty = offset;
 	by = offset - 0.5;
 	OpenGL* game = new OpenGL(argc, argv);
-
 	return 0;
 }
 
 void OpenGL::Display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	
 	glTranslatef(cameraPosX, cameraPosY, cameraPosZ);
 
 	DrawPolygon();
@@ -104,7 +183,6 @@ void OpenGL::Display()
 	glFlush();
 
 	rotation += 0.01;
-	glutPostRedisplay();
 }
 
 void OpenGL::DrawPolygon()
