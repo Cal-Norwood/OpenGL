@@ -10,18 +10,26 @@
 #include <random>
 #include <cmath>
 #define _USE_MATH_DEFINES
-#define TO_RADIANS 3.141592/180.0
 #include <math.h>
+#define ToRadians (M_PI/180.0f)
 using namespace std;
 using namespace chrono;
 
-float cameraPosX = 0;
+bool bExit = false;
+
+float cameraSpeedX = 0;
 float cameraPosY = 0;
-float cameraPosZ = 0;
+float cameraSpeedZ = 0;
+
+float cameraOffsetX = 0;
+float cameraOffsetY = 0;
+float cameraOffsetZ = 0;
+
+float cameraRotationY = 0;
 
 float horizontal = 0;
 float vertical = 0;
-float sensitivity = 0.005;
+float sensitivity = 0.003;
 
 float previousX = 0;
 bool negativeX = false;
@@ -84,6 +92,10 @@ void KeyboardInputUp(unsigned char key, int x, int y)
 	case 's':
 		isSPressed = false;
 		break;
+
+	case 'u':
+		bExit = true;
+		break;
 	}
 }
 
@@ -108,10 +120,15 @@ void MouseInput(int x, int y)
 	{
 		horizontal = fabs(x) * sensitivity;
 	}
+	
+	cameraRotationY += horizontal;
 
 	vertical = x * sensitivity;
 
+	//cout << horizontal << endl;
+	glTranslatef(-cameraOffsetX, 0, -cameraOffsetZ);
 	glRotatef(horizontal, 0.0f, 1.0f, 0.0f);
+	glTranslatef(cameraOffsetX, 0, cameraOffsetZ);
 	//glRotatef(vertical, 1.0f, 0.0f, 0.0f);
 
 	previousX = x;
@@ -123,32 +140,36 @@ void Update(int time)
 
 	if (isWPressed == true) 
 	{
-		cameraPosZ = 0.1f;
+		cameraSpeedZ = 0.1f;
+		//cameraOffsetZ += 0.1f;
 	} 
 
 	if (isAPressed == true)
 	{
-		cameraPosX = 0.2f;
+		cameraSpeedX = 0.2f;
+		//cameraOffsetX += 0.2f;
 	}
 
 	if (isDPressed == true)
 	{
-		cameraPosX = -0.2f;
+		cameraSpeedX = -0.2f;
+		//cameraOffsetX -= 0.2f;
 	}
 
 	if (isSPressed == true)
 	{
-		cameraPosZ = -0.1f;
+		cameraSpeedZ = -0.1f;
+		//cameraOffsetZ -= 0.1f;
 	}
 
 	if (isDPressed == false && isAPressed == false)
 	{
-		cameraPosX = 0;
+		cameraSpeedX = 0;
 	}
 
 	if (isWPressed == false && isSPressed == false)
 	{
-		cameraPosZ = 0;
+		cameraSpeedZ = 0;
 	}
 
 	glutPostRedisplay();
@@ -193,8 +214,24 @@ int main(int argc, char* argv[])
 
 void OpenGL::Display()
 {
+	if (bExit == true)
+	{
+		exit(0);
+	}
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glTranslatef(cameraPosX, cameraPosY, cameraPosZ);
+
+	float cosAngle = cosf(cameraRotationY * ToRadians);
+	float sinAngle = sinf(cameraRotationY * ToRadians);
+	float localSpeedX = (-cameraSpeedX * cosAngle) + (cameraSpeedZ * sinAngle);
+	float localSpeedZ = (cameraSpeedX * sinAngle) + (cameraSpeedZ * cosAngle);
+
+	cout << horizontal << endl;
+	cout << localSpeedX << " " << localSpeedZ << endl;
+
+	glTranslatef(-localSpeedX, cameraPosY, localSpeedZ);
+	cameraOffsetX -= localSpeedX;
+	cameraOffsetZ += localSpeedZ;
 
 	DrawPolygon();
 	DrawPolygon1();
