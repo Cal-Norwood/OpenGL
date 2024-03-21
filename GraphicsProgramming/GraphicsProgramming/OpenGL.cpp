@@ -8,6 +8,7 @@
 #include <thread>
 #include <iostream>
 #include <random>
+#include <cmath>
 #define _USE_MATH_DEFINES
 #define TO_RADIANS 3.141592/180.0
 #include <math.h>
@@ -20,7 +21,10 @@ float cameraPosZ = 0;
 
 float horizontal = 0;
 float vertical = 0;
-float sensitivity = 0.01;
+float sensitivity = 0.005;
+
+float previousX = 0;
+bool negativeX = false;
 
 bool isWPressed = false;
 bool isAPressed = false;
@@ -85,12 +89,32 @@ void KeyboardInputUp(unsigned char key, int x, int y)
 
 void MouseInput(int x, int y) 
 {
-	horizontal = x * sensitivity;
+	if (x < previousX)
+	{
+		horizontal = 0;
+		negativeX = true;
+	} 
+	else
+	{
+		horizontal = 0;
+		negativeX = false;
+	}
+
+	if (negativeX == true)
+	{
+		horizontal = -x * sensitivity;
+	}
+	else 
+	{
+		horizontal = fabs(x) * sensitivity;
+	}
+
 	vertical = x * sensitivity;
 
-	cout << x * sensitivity << endl;
 	//glRotatef(horizontal, 0.0f, 1.0f, 0.0f);
 	//glRotatef(vertical, 1.0f, 0.0f, 0.0f);
+
+	previousX = x;
 }
 
 void Update(int time) 
@@ -134,7 +158,7 @@ OpenGL::OpenGL(int argc, char* argv[])
 {
 	GLUTCallbacks::Init(this);
 	glutInit(&argc, argv);
-	glutInitWindowSize(800, 800);
+	glutInitWindowSize(1920, 1080);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH);
 	glutCreateWindow("OpenGL Program");
 	glutDisplayFunc(GLUTCallbacks::Display);
@@ -170,7 +194,6 @@ int main(int argc, char* argv[])
 void OpenGL::Display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
 	glTranslatef(cameraPosX, cameraPosY, cameraPosZ);
 
 	DrawPolygon();
