@@ -5,7 +5,6 @@ C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgram
 C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(117,14): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(185,14): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(189,14): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(208,18): warning C4305: '+=': truncation from 'double' to 'float'
 C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(214,22): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
 C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(221,20): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
 C:\Users\Cal Norwood\Documents\GitHub\OpenGL\GraphicsProgramming\GraphicsProgramming\OpenGL.cpp(221,14): warning C4305: 'argument': truncation from 'double' to 'GLfloat'

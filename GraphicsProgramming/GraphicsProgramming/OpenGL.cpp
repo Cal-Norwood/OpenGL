@@ -111,7 +111,7 @@ void MouseInput(int x, int y)
 
 	vertical = x * sensitivity;
 
-	//glRotatef(horizontal, 0.0f, 1.0f, 0.0f);
+	glRotatef(horizontal, 0.0f, 1.0f, 0.0f);
 	//glRotatef(vertical, 1.0f, 0.0f, 0.0f);
 
 	previousX = x;
@@ -205,7 +205,7 @@ void OpenGL::Display()
 
 	glFlush();
 
-	rotation += 0.01;
+	rotation += 1;
 }
 
 void OpenGL::DrawPolygon()
