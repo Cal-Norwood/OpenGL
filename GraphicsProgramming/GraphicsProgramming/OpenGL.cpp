@@ -29,7 +29,7 @@ float cameraRotationY = 0;
 
 float horizontal = 0;
 float vertical = 0;
-float sensitivity = 0.003;
+float sensitivity = 0.0025;
 
 float previousX = 0;
 bool negativeX = false;
@@ -327,11 +327,11 @@ void OpenGL::DrawPolygon1()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 0, 0, 0);
-		glVertex3f(15, 4, -10);
-		glVertex3f(-15, 4, -10);
-		glVertex3f(-15, -4, -10);
-		glVertex3f(15, -4, -10);
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(2, 4, -10);
+		glVertex3f(-2, 4, -10);
+		glVertex3f(-2, -4, -10);
+		glVertex3f(2, -4, -10);
 
 		glEnd();
 	}
@@ -345,11 +345,44 @@ void OpenGL::DrawPolygon2()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.9, 0, 0, 0);
-		glVertex3f(15, 4, -10);
-		glVertex3f(15, 4, 10);
-		glVertex3f(15, -4, 10);
-		glVertex3f(15, -4, -10);
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(2, -1, -10);
+		glVertex3f(2, -1, 10);
+		glVertex3f(2, -4, 10);
+		glVertex3f(2, -4, -10);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(2, 4, -10);
+		glVertex3f(2, 4, 10);
+		glVertex3f(2, 1, 10);
+		glVertex3f(2, 1, -10);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(2, -1, -10);
+		glVertex3f(2, -1, 10);
+		glVertex3f(3, -1, 10);
+		glVertex3f(3, -1, -10);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(2, 1, -10);
+		glVertex3f(2, 1, 10);
+		glVertex3f(3, 1, 10);
+		glVertex3f(3, 1, -10);
 
 		glEnd();
 	}
@@ -363,11 +396,44 @@ void OpenGL::DrawPolygon3()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.8, 0, 0, 0);
-		glVertex3f(-15, 4, -10);
-		glVertex3f(-15, 4, 10);
-		glVertex3f(-15, -4, 10);
-		glVertex3f(-15, -4, -10);
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(-2, -1, -10);
+		glVertex3f(-2, -1, 10);
+		glVertex3f(-2, -4, 10);
+		glVertex3f(-2, -4, -10);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(-2, 4, -10);
+		glVertex3f(-2, 4, 10);
+		glVertex3f(-2, 1, 10);
+		glVertex3f(-2, 1, -10);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(-2, -1, -10);
+		glVertex3f(-2, -1, 10);
+		glVertex3f(-3, -1, 10);
+		glVertex3f(-3, -1, -10);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(-2, 1, -10);
+		glVertex3f(-2, 1, 10);
+		glVertex3f(-3, 1, 10);
+		glVertex3f(-3, 1, -10);
 
 		glEnd();
 	}
@@ -381,11 +447,11 @@ void OpenGL::DrawPolygon4()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.7, 0, 0, 0);
-		glVertex3f(15, 4, 10);
-		glVertex3f(-15, 4, 10);
-		glVertex3f(-15, -4, 10);
-		glVertex3f(15, -4, 10);
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(2, 4, 10);
+		glVertex3f(-2, 4, 10);
+		glVertex3f(-2, -4, 10);
+		glVertex3f(2, -4, 10);
 
 		glEnd();
 	}
@@ -399,11 +465,22 @@ void OpenGL::DrawPolygon5()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0, 1, 0, 0);
-		glVertex3f(15, -4, -10);
-		glVertex3f(15, -4, 10);
-		glVertex3f(-15, -4, 10);
-		glVertex3f(-15, -4, -10);
+		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glVertex3f(2, -4, -10);
+		glVertex3f(2, -4, 10);
+		glVertex3f(-2, -4, 10);
+		glVertex3f(-2, -4, -10);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glVertex3f(2, 4, -10);
+		glVertex3f(2, 4, 10);
+		glVertex3f(-2, 4, 10);
+		glVertex3f(-2, 4, -10);
 
 		glEnd();
 	}
