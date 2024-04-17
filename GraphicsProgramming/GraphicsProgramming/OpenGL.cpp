@@ -9,6 +9,7 @@
 #include <iostream>
 #include <random>
 #include <cmath>
+#include <fstream>
 #define _USE_MATH_DEFINES
 #include <math.h>
 #define ToRadians (M_PI/180.0f)
@@ -29,7 +30,7 @@ float cameraRotationY = 0;
 
 float horizontal = 0;
 float vertical = 0;
-float sensitivity = 0.0025;
+float sensitivity = 0.0025f;
 
 float previousX = 0;
 bool negativeX = false;
@@ -50,6 +51,48 @@ float angle;
 
 bool moveRight = true;
 bool moveUp = true;
+
+string CubeMap[]
+{
+	"yellowcloud_bk.jpg",
+	"yellowcloud_dn.jpg",
+	"yellowcloud_ft.jpg",
+	"yellowcloud_lf.jpg",
+	"yellowcloud_rt.jpg",
+	"yellowcloud_up.jpg"
+};
+
+bool Texture2D::Load(const char* path, int width, int height)
+{
+	char* tempTextureData; int fileSize; ifstream inFile;
+	_width = width; _height = height;
+	inFile.open(path, ios::binary);
+	if (!inFile.good()) {
+		cerr << "Can't open texture file " << path << endl;
+		return false;
+	}
+	inFile.seekg(0, ios::end);
+	fileSize = (int)inFile.tellg();
+	tempTextureData = new char[fileSize];
+	inFile.seekg(0, ios::beg);
+	inFile.read(tempTextureData, fileSize);
+	inFile.close();
+	glGenTextures(1, &_ID);
+	glBindTexture(GL_TEXTURE_2D, _ID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, tempTextureData);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	return true;
+}
+
+void LoadTextureAndBind(const char* tex)
+{
+	Texture2D* texture = new Texture2D();
+	texture->Load(tex, 512, 512);
+
+	glBindTexture(GL_TEXTURE_2D, texture->GetID());
+}
 
 void KeyboardInputDown(unsigned char key, int x, int y)
 {
@@ -188,6 +231,14 @@ OpenGL::OpenGL(int argc, char* argv[])
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
+	glEnable(GL_TEXTURE_2D);
+
+	LoadTextureAndBind("yellowcloud_bk.jpg");
+	LoadTextureAndBind("yellowcloud_dn.jpg");
+	LoadTextureAndBind("yellowcloud_ft.jpg");
+	LoadTextureAndBind("yellowcloud_lf.jpg");
+	LoadTextureAndBind("yellowcloud_rt.jpg");
+	LoadTextureAndBind("yellowcloud_up.jpg");
 
 	glutKeyboardFunc(KeyboardInputDown);
 	glutKeyboardUpFunc(KeyboardInputUp);
@@ -209,6 +260,7 @@ int main(int argc, char* argv[])
 	ty = offset;
 	by = offset - 0.5;
 	OpenGL* game = new OpenGL(argc, argv);
+
 	return 0;
 }
 
@@ -233,6 +285,7 @@ void OpenGL::Display()
 	cameraOffsetX -= localSpeedX;
 	cameraOffsetZ += localSpeedZ;
 
+	DrawPolygon0();
 	DrawPolygon();
 	DrawPolygon1();
 	DrawPolygon2();
@@ -243,6 +296,22 @@ void OpenGL::Display()
 	glFlush();
 
 	rotation += 1;
+}
+
+void OpenGL::DrawPolygon0()
+{
+	glBegin(GL_QUADS);
+	{
+		glTexCoord2f(0, 0);
+		glVertex3f(99, -99, -99);
+		glVertex3f(99, 99, -99);
+		glVertex3f(-99, 99, -99);
+		glVertex3f(-99, -99, -99);
+
+		glEnd();
+	}
+
+	glPopMatrix();
 }
 
 void OpenGL::DrawPolygon()
