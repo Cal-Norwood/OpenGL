@@ -16,6 +16,24 @@
 using namespace std;
 using namespace chrono;
 
+class Texture2D
+{
+private:
+	GLuint _ID;
+	int _width, _height;
+
+public:
+
+	bool Load(const char* path, int width, int height);
+
+	GLuint GetID() const
+	{
+		return _ID;
+	}
+	int GetWidth() const { return _width; }
+	int GetHeight() const { return _height; }
+};
+
 bool bExit = false;
 
 float cameraSpeedX = 0;
@@ -67,7 +85,7 @@ bool Texture2D::Load(const char* path, int width, int height)
 	char* tempTextureData; int fileSize; ifstream inFile;
 	_width = width; _height = height;
 	inFile.open(path, ios::binary);
-	if (!inFile.good()) {
+	if (!inFile.is_open()) {
 		cerr << "Can't open texture file " << path << endl;
 		return false;
 	}
@@ -89,9 +107,10 @@ bool Texture2D::Load(const char* path, int width, int height)
 void LoadTextureAndBind(const char* tex)
 {
 	Texture2D* texture = new Texture2D();
-	texture->Load(tex, 512, 512);
+	texture->Load(tex, 1024, 1024);
 
-	glBindTexture(GL_TEXTURE_2D, texture->GetID());
+	//glBindTexture(GL_TEXTURE_2D, texture->GetID());
+	//glBindTexture(GL_TEXTURE_2D, 1);
 }
 
 void KeyboardInputDown(unsigned char key, int x, int y)
@@ -225,21 +244,22 @@ OpenGL::OpenGL(int argc, char* argv[])
 	glutInitWindowSize(1920, 1080);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH);
 	glutCreateWindow("OpenGL Program");
-	glutDisplayFunc(GLUTCallbacks::Display);
 
 	gluPerspective(120, 1 / 1, 0.1, 100);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_COLOR_MATERIAL);
+	//glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHT0);
 
-	LoadTextureAndBind("yellowcloud_bk.jpg");
-	LoadTextureAndBind("yellowcloud_dn.jpg");
-	LoadTextureAndBind("yellowcloud_ft.jpg");
-	LoadTextureAndBind("yellowcloud_lf.jpg");
-	LoadTextureAndBind("yellowcloud_rt.jpg");
-	LoadTextureAndBind("yellowcloud_up.jpg");
-
+	LoadTextureAndBind("yellowcloud_bk.bmp");
+	//LoadTextureAndBind("yellowcloud_ft.jpg");
+	//LoadTextureAndBind("yellowcloud_lf.jpg");
+	//LoadTextureAndBind("yellowcloud_rt.jpg");
+	//LoadTextureAndBind("yellowcloud_up.jpg");
+	glutDisplayFunc(GLUTCallbacks::Display);
 	glutKeyboardFunc(KeyboardInputDown);
 	glutKeyboardUpFunc(KeyboardInputUp);
 	glutPassiveMotionFunc(MouseInput);
@@ -300,13 +320,48 @@ void OpenGL::Display()
 
 void OpenGL::DrawPolygon0()
 {
+	float skyboxCullingEdge = 99 / sqrt(3);
 	glBegin(GL_QUADS);
 	{
+		glColor4f(1, 1, 1, 1);
 		glTexCoord2f(0, 0);
-		glVertex3f(99, -99, -99);
-		glVertex3f(99, 99, -99);
-		glVertex3f(-99, 99, -99);
-		glVertex3f(-99, -99, -99);
+		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(0, 1);
+		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(1, 1);
+		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(1, 0);
+		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+
+		glEnd();
+	}
+
+	glBegin(GL_QUADS);
+	{
+		glColor4f(1, 1, 1, 1);
+		glTexCoord2f(0, 0);
+		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, skyboxCullingEdge);
+		glTexCoord2f(0, 1);
+		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, skyboxCullingEdge);
+		glTexCoord2f(1, 1);
+		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(1, 0);
+		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+
+		glEnd();
+	}
+
+	glBegin(GL_QUADS);
+	{
+		glColor4f(1, 1, 1, 1);
+		glTexCoord2f(0, 0);
+		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(0, 1);
+		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(1, 1);
+		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(1, 0);
+		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
 
 		glEnd();
 	}
