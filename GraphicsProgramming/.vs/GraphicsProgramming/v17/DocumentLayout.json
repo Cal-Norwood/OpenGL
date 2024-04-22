@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\Cal Norwood\\Documents\\GitHub\\OpenGL\\GraphicsProgramming\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A133A176-080A-4F9D-8778-946C35DC2C81}|GraphicsProgramming\\GraphicsProgramming.vcxproj|C:\\Users\\Cal Norwood\\Documents\\GitHub\\OpenGL\\GraphicsProgramming\\GraphicsProgramming\\OpenGL.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A133A176-080A-4F9D-8778-946C35DC2C81}|GraphicsProgramming\\GraphicsProgramming.vcxproj|solutionrelative:GraphicsProgramming\\OpenGL.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A133A176-080A-4F9D-8778-946C35DC2C81}|GraphicsProgramming\\GraphicsProgramming.vcxproj|C:\\Users\\Cal Norwood\\Documents\\GitHub\\OpenGL\\GraphicsProgramming\\GraphicsProgramming\\OpenGL.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{A133A176-080A-4F9D-8778-946C35DC2C81}|GraphicsProgramming\\GraphicsProgramming.vcxproj|solutionrelative:GraphicsProgramming\\OpenGL.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A133A176-080A-4F9D-8778-946C35DC2C81}|GraphicsProgramming\\GraphicsProgramming.vcxproj|C:\\Users\\Cal Norwood\\Documents\\GitHub\\OpenGL\\GraphicsProgramming\\GraphicsProgramming\\OpenGL.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A133A176-080A-4F9D-8778-946C35DC2C81}|GraphicsProgramming\\GraphicsProgramming.vcxproj|solutionrelative:GraphicsProgramming\\OpenGL.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A133A176-080A-4F9D-8778-946C35DC2C81}|GraphicsProgramming\\GraphicsProgramming.vcxproj|C:\\Users\\Cal Norwood\\Documents\\GitHub\\OpenGL\\GraphicsProgramming\\GraphicsProgramming\\GLUTCallbacks.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -26,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -58,26 +58,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "OpenGL.cpp",
               "DocumentMoniker": "C:\\Users\\Cal Norwood\\Documents\\GitHub\\OpenGL\\GraphicsProgramming\\GraphicsProgramming\\OpenGL.cpp",
               "RelativeDocumentMoniker": "GraphicsProgramming\\OpenGL.cpp",
               "ToolTip": "C:\\Users\\Cal Norwood\\Documents\\GitHub\\OpenGL\\GraphicsProgramming\\GraphicsProgramming\\OpenGL.cpp",
               "RelativeToolTip": "GraphicsProgramming\\OpenGL.cpp",
-              "ViewState": "AQIAAFcAAAAAAAAAAAAAABAAAAAXAAAA",
+              "ViewState": "AQIAAHABAAAAAAAAAAAowJgBAAAhAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-03-12T13:58:50.662Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "OpenGL.h",
               "DocumentMoniker": "C:\\Users\\Cal Norwood\\Documents\\GitHub\\OpenGL\\GraphicsProgramming\\GraphicsProgramming\\OpenGL.h",
               "RelativeDocumentMoniker": "GraphicsProgramming\\OpenGL.h",
               "ToolTip": "C:\\Users\\Cal Norwood\\Documents\\GitHub\\OpenGL\\GraphicsProgramming\\GraphicsProgramming\\OpenGL.h",
               "RelativeToolTip": "GraphicsProgramming\\OpenGL.h",
-              "ViewState": "AQIAABAAAAAAAAAAAAAYwCYAAAABAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABYAAAABAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2024-03-12T13:58:51.087Z",
               "EditorCaption": ""

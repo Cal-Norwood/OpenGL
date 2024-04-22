@@ -355,16 +355,62 @@ void OpenGL::DrawPolygon0()
 	{
 		glColor4f(1, 1, 1, 1);
 		glTexCoord2f(0, 0);
-		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, skyboxCullingEdge);
 		glTexCoord2f(0, 1);
-		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, skyboxCullingEdge);
 		glTexCoord2f(1, 1);
-		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, skyboxCullingEdge);
 		glTexCoord2f(1, 0);
-		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, skyboxCullingEdge);
 
 		glEnd();
 	}
+
+	glBegin(GL_QUADS);
+	{
+		glColor4f(1, 1, 1, 1);
+		glTexCoord2f(0, 0);
+		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(0, 1);
+		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(1, 1);
+		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, skyboxCullingEdge);
+		glTexCoord2f(1, 0);
+		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, skyboxCullingEdge);
+
+		glEnd();
+	}
+
+	glBegin(GL_QUADS);
+	{
+		glColor4f(1, 1, 1, 1);
+		glTexCoord2f(0, 0);
+		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(0, 1);
+		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(1, 1);
+		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, skyboxCullingEdge);
+		glTexCoord2f(1, 0);
+		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, skyboxCullingEdge);
+
+		glEnd();
+	}
+
+	glBegin(GL_QUADS);
+	{
+		glColor4f(1, 1, 1, 1);
+		glTexCoord2f(0, 0);
+		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(0, 1);
+		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(1, 1);
+		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, skyboxCullingEdge);
+		glTexCoord2f(1, 0);
+		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, skyboxCullingEdge);
+
+		glEnd();
+	}
+
 
 	glPopMatrix();
 }
