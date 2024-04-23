@@ -70,6 +70,15 @@ float angle;
 bool moveRight = true;
 bool moveUp = true;
 
+bool skyboxSpawned = false;
+
+Texture2D* f;
+Texture2D* l;
+Texture2D* r;
+Texture2D* b;
+Texture2D* u;
+Texture2D* d;
+
 string CubeMap[]
 {
 	"yellowcloud_bk.jpg",
@@ -104,13 +113,15 @@ bool Texture2D::Load(const char* path, int width, int height)
 	return true;
 }
 
-void LoadTextureAndBind(const char* tex)
+Texture2D* LoadTextureAndBind(const char* tex)
 {
 	Texture2D* texture = new Texture2D();
 	texture->Load(tex, 1024, 1024);
 
 	//glBindTexture(GL_TEXTURE_2D, texture->GetID());
 	//glBindTexture(GL_TEXTURE_2D, 1);
+
+	return texture;
 }
 
 void KeyboardInputDown(unsigned char key, int x, int y)
@@ -254,11 +265,13 @@ OpenGL::OpenGL(int argc, char* argv[])
 	//glEnable(GL_LIGHTING);
 	//glEnable(GL_LIGHT0);
 
-	LoadTextureAndBind("yellowcloud_bk.bmp");
-	//LoadTextureAndBind("yellowcloud_ft.jpg");
-	//LoadTextureAndBind("yellowcloud_lf.jpg");
-	//LoadTextureAndBind("yellowcloud_rt.jpg");
-	//LoadTextureAndBind("yellowcloud_up.jpg");
+	f = LoadTextureAndBind("yellowcloud_ft.bmp");
+	l = LoadTextureAndBind("yellowcloud_lf.bmp");
+	r = LoadTextureAndBind("yellowcloud_rt.bmp");
+	b = LoadTextureAndBind("yellowcloud_bk.bmp");
+	u = LoadTextureAndBind("yellowcloud_up.bmp");
+	d = LoadTextureAndBind("yellowcloud_dn.bmp");
+
 	glutDisplayFunc(GLUTCallbacks::Display);
 	glutKeyboardFunc(KeyboardInputDown);
 	glutKeyboardUpFunc(KeyboardInputUp);
@@ -321,6 +334,9 @@ void OpenGL::Display()
 void OpenGL::DrawPolygon0()
 {
 	float skyboxCullingEdge = 99 / sqrt(3);
+
+	glBindTexture(GL_TEXTURE_2D, f->GetID());
+
 	glBegin(GL_QUADS);
 	{
 		glColor4f(1, 1, 1, 1);
@@ -335,6 +351,8 @@ void OpenGL::DrawPolygon0()
 
 		glEnd();
 	}
+
+	glBindTexture(GL_TEXTURE_2D, l->GetID());
 
 	glBegin(GL_QUADS);
 	{
@@ -351,6 +369,8 @@ void OpenGL::DrawPolygon0()
 		glEnd();
 	}
 
+	glBindTexture(GL_TEXTURE_2D, b->GetID());
+
 	glBegin(GL_QUADS);
 	{
 		glColor4f(1, 1, 1, 1);
@@ -365,6 +385,8 @@ void OpenGL::DrawPolygon0()
 
 		glEnd();
 	}
+
+	glBindTexture(GL_TEXTURE_2D, r->GetID());
 
 	glBegin(GL_QUADS);
 	{
@@ -381,6 +403,8 @@ void OpenGL::DrawPolygon0()
 		glEnd();
 	}
 
+	glBindTexture(GL_TEXTURE_2D, d->GetID());
+
 	glBegin(GL_QUADS);
 	{
 		glColor4f(1, 1, 1, 1);
@@ -395,6 +419,8 @@ void OpenGL::DrawPolygon0()
 
 		glEnd();
 	}
+
+	glBindTexture(GL_TEXTURE_2D, u->GetID());
 
 	glBegin(GL_QUADS);
 	{
