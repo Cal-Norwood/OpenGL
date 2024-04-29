@@ -106,10 +106,13 @@ bool Texture2D::Load(const char* path, int width, int height)
 	inFile.close();
 	glGenTextures(1, &_ID);
 	glBindTexture(GL_TEXTURE_2D, _ID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, tempTextureData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, tempTextureData);
 
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	return true;
 }
 
@@ -341,18 +344,18 @@ void OpenGL::DrawPolygon0()
 	{
 		glColor4f(1, 1, 1, 1);
 		glTexCoord2f(0, 0);
-		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
-		glTexCoord2f(0, 1);
 		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(0, 1);
+		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
 		glTexCoord2f(1, 1);
-		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
-		glTexCoord2f(1, 0);
 		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(1, 0);
+		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
 
 		glEnd();
 	}
 
-	glBindTexture(GL_TEXTURE_2D, l->GetID());
+	/*glBindTexture(GL_TEXTURE_2D, l->GetID());
 
 	glBegin(GL_QUADS);
 	{
@@ -435,7 +438,7 @@ void OpenGL::DrawPolygon0()
 		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, skyboxCullingEdge);
 
 		glEnd();
-	}
+	}*/
 
 
 	glPopMatrix();
