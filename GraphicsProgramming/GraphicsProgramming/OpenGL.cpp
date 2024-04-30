@@ -24,7 +24,7 @@ private:
 
 public:
 
-	bool Load(const char* path, int width, int height);
+	bool LoadRAW(const char* path, int width, int height);
 
 	GLuint GetID() const
 	{
@@ -72,12 +72,13 @@ bool moveUp = true;
 
 bool skyboxSpawned = false;
 
-Texture2D* f;
-Texture2D* l;
-Texture2D* r;
-Texture2D* b;
-Texture2D* u;
-Texture2D* d;
+//Texture2D* f;
+GLuint f;
+GLuint l;
+GLuint r;
+GLuint b;
+GLuint u;
+GLuint d;
 
 string CubeMap[]
 {
@@ -89,7 +90,78 @@ string CubeMap[]
 	"yellowcloud_up.jpg"
 };
 
-bool Texture2D::Load(const char* path, int width, int height)
+
+
+
+int LoadTextureTGA(const char* textureFileName)
+{
+	GLuint ID = 0;
+	char* tempHeaderData = new char[18]; //18 Bytes is TGA Header Size
+	char* tempTextureData;
+	int fileSize;
+	char type, pixelDepth, mode;
+
+	ifstream inFile;
+
+	inFile.open(textureFileName, ios::binary);
+	if (!inFile.good())
+	{
+		cerr << "Can't open texture file " << textureFileName << endl;
+		return -1;
+	}
+
+	//18 Bytes is the size of a TGA Header
+	inFile.seekg(0, ios::beg); //Seek back to beginning of file
+	inFile.read(tempHeaderData, 18); //Read in all the data in one go
+
+	inFile.seekg(0, ios::end); //Seek to end of file
+	fileSize = (int)inFile.tellg() - 18; //Get current position in file - The End, this gives us total file size
+	tempTextureData = new char[fileSize]; //Create an new aray to store data
+	inFile.seekg(18, ios::beg); //Seek back to beginning of file + 18
+	inFile.read(tempTextureData, fileSize); //Read in all the data in one go
+	inFile.close(); //Close the file
+
+	type = tempHeaderData[2]; //Get TGA Type out of Header - Must be RGB for this to work
+	int _width = ((unsigned char)tempHeaderData[13] << 8u) + (unsigned char)tempHeaderData[12]; // Find the width (Combines two bytes into a short)
+	int _height = ((unsigned char)tempHeaderData[15] << 8u) + (unsigned char)tempHeaderData[14]; //Find the height
+	pixelDepth = tempHeaderData[16]; // Find the pixel depth (24/32bpp)
+
+	bool flipped = false;
+	if ((int)((tempHeaderData[11] << 8) + tempHeaderData[10]) == 0)
+		flipped = true;
+
+	//We only support RGB type
+	if (type == 2)
+	{
+		cout << textureFileName << " loaded." << endl;
+
+		glGenTextures(1, &ID); //Get next Texture ID
+		glBindTexture(GL_TEXTURE_2D, ID); //Bind the texture to the ID
+
+		mode = pixelDepth / 8;
+
+		//Note that TGA files are stored as BGR(A) - So we need to specify the format as GL_BGR(A)_EXT
+		if (mode == 4)
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, tempTextureData);
+		else
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, tempTextureData);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	}
+
+	delete[] tempHeaderData; //We don't need the header memory anymore
+	delete[] tempTextureData; //Clear up the data - We don't need this any more
+
+	return ID;
+}
+
+
+
+bool Texture2D::LoadRAW(const char* path, int width, int height)
 {
 	char* tempTextureData; int fileSize; ifstream inFile;
 	_width = width; _height = height;
@@ -120,7 +192,7 @@ bool Texture2D::Load(const char* path, int width, int height)
 Texture2D* LoadTextureAndBind(const char* tex)
 {
 	Texture2D* texture = new Texture2D();
-	texture->Load(tex, 1024, 1024);
+	texture->LoadRAW(tex, 1024, 1024);
 
 	//glBindTexture(GL_TEXTURE_2D, texture->GetID());
 	//glBindTexture(GL_TEXTURE_2D, 1);
@@ -269,12 +341,12 @@ OpenGL::OpenGL(int argc, char* argv[])
 	//glEnable(GL_LIGHTING);
 	//glEnable(GL_LIGHT0);
 
-	f = LoadTextureAndBind("yellowcloud_ft.bmp");
-	l = LoadTextureAndBind("yellowcloud_lf.bmp");
-	r = LoadTextureAndBind("yellowcloud_rt.bmp");
-	b = LoadTextureAndBind("yellowcloud_bk.bmp");
-	u = LoadTextureAndBind("yellowcloud_up.bmp");
-	d = LoadTextureAndBind("yellowcloud_dn.bmp");
+	f = LoadTextureTGA("yellowcloud_ft.tga");
+	l = LoadTextureTGA("yellowcloud_lf.tga");
+	r = LoadTextureTGA("yellowcloud_rt.tga");
+	b = LoadTextureTGA("yellowcloud_bk.tga");
+	u = LoadTextureTGA("yellowcloud_up.tga");
+	d = LoadTextureTGA("yellowcloud_dn.tga");
 
 	glutDisplayFunc(GLUTCallbacks::Display);
 	glutKeyboardFunc(KeyboardInputDown);
@@ -339,41 +411,41 @@ void OpenGL::DrawPolygon0()
 {
 	float skyboxCullingEdge = 99 / sqrt(3);
 
-	glBindTexture(GL_TEXTURE_2D, f->GetID());
+	glBindTexture(GL_TEXTURE_2D, f);
 
 	glBegin(GL_QUADS);
 	{
 		glColor4f(1, 1, 1, 1);
-		glTexCoord2f(0, 0);
-		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
-		glTexCoord2f(0, 1);
-		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
 		glTexCoord2f(1, 1);
-		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
 		glTexCoord2f(1, 0);
+		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(0, 0);
+		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(0, 1);
 		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
 
 		glEnd();
 	}
 
-	/*glBindTexture(GL_TEXTURE_2D, l->GetID());
+	glBindTexture(GL_TEXTURE_2D, l);
 
 	glBegin(GL_QUADS);
 	{
 		glColor4f(1, 1, 1, 1);
-		glTexCoord2f(0, 0);
-		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, skyboxCullingEdge);
-		glTexCoord2f(0, 1);
-		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, skyboxCullingEdge);
 		glTexCoord2f(1, 1);
-		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, skyboxCullingEdge);
 		glTexCoord2f(1, 0);
+		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, skyboxCullingEdge);
+		glTexCoord2f(0, 0);
+		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(0, 1);
 		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
 
 		glEnd();
 	}
 
-	glBindTexture(GL_TEXTURE_2D, b->GetID());
+	glBindTexture(GL_TEXTURE_2D, b);
 
 	glBegin(GL_QUADS);
 	{
@@ -390,56 +462,56 @@ void OpenGL::DrawPolygon0()
 		glEnd();
 	}
 
-	glBindTexture(GL_TEXTURE_2D, r->GetID());
+	glBindTexture(GL_TEXTURE_2D, r);
 
 	glBegin(GL_QUADS);
 	{
 		glColor4f(1, 1, 1, 1);
-		glTexCoord2f(0, 0);
-		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
-		glTexCoord2f(0, 1);
-		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
 		glTexCoord2f(1, 1);
-		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, skyboxCullingEdge);
+		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
 		glTexCoord2f(1, 0);
+		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(0, 0);
+		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, skyboxCullingEdge);
+		glTexCoord2f(0, 1);
 		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, skyboxCullingEdge);
 
 		glEnd();
 	}
 
-	glBindTexture(GL_TEXTURE_2D, d->GetID());
+	glBindTexture(GL_TEXTURE_2D, d);
 
 	glBegin(GL_QUADS);
 	{
 		glColor4f(1, 1, 1, 1);
-		glTexCoord2f(0, 0);
-		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
-		glTexCoord2f(0, 1);
-		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
 		glTexCoord2f(1, 1);
-		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, skyboxCullingEdge);
+		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
 		glTexCoord2f(1, 0);
+		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(0, 0);
+		glVertex3f(skyboxCullingEdge, -skyboxCullingEdge, skyboxCullingEdge);
+		glTexCoord2f(0, 1);
 		glVertex3f(-skyboxCullingEdge, -skyboxCullingEdge, skyboxCullingEdge);
 
 		glEnd();
 	}
 
-	glBindTexture(GL_TEXTURE_2D, u->GetID());
+	glBindTexture(GL_TEXTURE_2D, u);
 
 	glBegin(GL_QUADS);
 	{
 		glColor4f(1, 1, 1, 1);
-		glTexCoord2f(0, 0);
-		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
-		glTexCoord2f(0, 1);
-		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
 		glTexCoord2f(1, 1);
-		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, skyboxCullingEdge);
+		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
 		glTexCoord2f(1, 0);
+		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, -skyboxCullingEdge);
+		glTexCoord2f(0, 0);
+		glVertex3f(skyboxCullingEdge, skyboxCullingEdge, skyboxCullingEdge);
+		glTexCoord2f(0, 1);
 		glVertex3f(-skyboxCullingEdge, skyboxCullingEdge, skyboxCullingEdge);
 
 		glEnd();
-	}*/
+	}
 
 
 	glPopMatrix();
