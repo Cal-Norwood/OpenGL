@@ -90,6 +90,88 @@ string CubeMap[]
 	"yellowcloud_up.jpg"
 };
 
+vector<vector<float>> geometryCoordsHorizontal =
+{
+	{1.5, 2.5, 10.5, -10.5},
+	{-1.5, -2.5, 10.5, -10.5},
+	{9.5, 10, 40, 10},
+	{-9.5, -10, 40, 10}
+};
+
+vector<vector<float>> geometryCoordsDepth =
+{
+	{-9.5, -10.5, 2.5, -2.5},
+	{10, 10.5, 10, 2.5, 1},
+	{ 10, 10.5, -2.5, -10, 1},
+	{39.5,40, 10, -10, 0}
+};
+
+void HorizontalCollidersCheck(float &localSpeedX)
+{
+	for (vector<float> colliderPoint : geometryCoordsHorizontal)
+	{
+		if (colliderPoint[0] > 0)
+		{
+			// 0 - inner, 1 - outer, 2 - lengthForward, 3 - lengthBackward
+			if (cameraOffsetX > colliderPoint[0] && cameraOffsetX < colliderPoint[1] && cameraOffsetZ < colliderPoint[2] && cameraOffsetZ > colliderPoint[3])
+			{
+				if (localSpeedX < 0)
+				{
+					localSpeedX = 0;
+				}
+			}
+		}
+		else
+		{
+			if (cameraOffsetX < colliderPoint[0] && cameraOffsetX > colliderPoint[1] && cameraOffsetZ < colliderPoint[2] && cameraOffsetZ > colliderPoint[3])
+			{
+				if (localSpeedX > 0)
+				{
+					localSpeedX = 0;
+				}
+			}
+		}
+	}
+}
+
+void DepthCollidersCheck(float &localSpeedZ)
+{
+	for (vector<float> colliderPoint : geometryCoordsDepth)
+	{
+		if (colliderPoint[0] > 0)
+		{
+			// 0 - inner, 1 - outer, 2 - lengthLeft, 3 - lengthRight
+			if (cameraOffsetZ > colliderPoint[0] && cameraOffsetZ < colliderPoint[1] && cameraOffsetX < colliderPoint[2] && cameraOffsetX > colliderPoint[3]) // needs fix
+			{
+				if (colliderPoint[4] == 0)
+				{
+					if (localSpeedZ > 0)
+					{
+						localSpeedZ = 0;
+					}
+				}
+				else
+				{
+					if (localSpeedZ < 0)
+					{
+						localSpeedZ = 0;
+					}
+				}
+			}
+		}
+		else
+		{
+			if (cameraOffsetZ < colliderPoint[0] && cameraOffsetZ > colliderPoint[1] && cameraOffsetX < colliderPoint[2] && cameraOffsetX > colliderPoint[3])
+			{
+				if (localSpeedZ < 0)
+				{
+					localSpeedZ = 0;
+				}
+			}
+		}
+	}
+}
+
 
 
 
@@ -387,20 +469,33 @@ void OpenGL::Display()
 	float localSpeedX = (-cameraSpeedX * cosAngle) + (cameraSpeedZ * sinAngle);
 	float localSpeedZ = (cameraSpeedX * sinAngle) + (cameraSpeedZ * cosAngle);
 
-	cout << horizontal << endl;
-	cout << localSpeedX << " " << localSpeedZ << endl;
+	cout << cameraOffsetZ << endl;
+
+	HorizontalCollidersCheck(localSpeedX);
+	DepthCollidersCheck(localSpeedZ);
 
 	glTranslatef(-localSpeedX, cameraPosY, localSpeedZ);
+
 	cameraOffsetX -= localSpeedX;
 	cameraOffsetZ += localSpeedZ;
 
 	DrawPolygon0();
 	DrawPolygon();
-	DrawPolygon1();
+	//DrawPolygon1();
 	DrawPolygon2();
 	DrawPolygon3();
 	DrawPolygon4();
 	DrawPolygon5();
+	DrawPuzzleRoom();
+	DrawPuzzle1();
+	DrawPuzzle2();
+	DrawPuzzle3();
+	DrawPuzzle4();
+	DrawPuzzle5();
+	DrawPuzzle6();
+	DrawPuzzle7();
+	DrawPuzzle8();
+	DrawPuzzle9();
 
 	glFlush();
 
@@ -526,7 +621,7 @@ void OpenGL::DrawPolygon()
 
 	glBegin(GL_LINE_LOOP);
 	{
-		glColor4f(1, 0, 0, 0);
+		glColor4f(1, 0, 0, 1);
 		glVertex3f(0.05, 0.05, -1);
 		glVertex3f(-0.05, 0.05, -1);
 		glVertex3f(-0.05, -0.05, -1);
@@ -599,7 +694,7 @@ void OpenGL::DrawPolygon1()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(2, 4, -10);
 		glVertex3f(-2, 4, -10);
 		glVertex3f(-2, -4, -10);
@@ -617,7 +712,7 @@ void OpenGL::DrawPolygon2()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(2, -1, -10);
 		glVertex3f(2, -1, 10);
 		glVertex3f(2, -4, 10);
@@ -628,7 +723,7 @@ void OpenGL::DrawPolygon2()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(2, 4, -10);
 		glVertex3f(2, 4, 10);
 		glVertex3f(2, 1, 10);
@@ -639,7 +734,7 @@ void OpenGL::DrawPolygon2()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(2, -1, -10);
 		glVertex3f(2, -1, 10);
 		glVertex3f(3, -1, 10);
@@ -650,7 +745,7 @@ void OpenGL::DrawPolygon2()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(2, 1, -10);
 		glVertex3f(2, 1, 10);
 		glVertex3f(3, 1, 10);
@@ -668,7 +763,7 @@ void OpenGL::DrawPolygon3()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(-2, -1, -10);
 		glVertex3f(-2, -1, 10);
 		glVertex3f(-2, -4, 10);
@@ -679,7 +774,7 @@ void OpenGL::DrawPolygon3()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(-2, 4, -10);
 		glVertex3f(-2, 4, 10);
 		glVertex3f(-2, 1, 10);
@@ -690,7 +785,7 @@ void OpenGL::DrawPolygon3()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(-2, -1, -10);
 		glVertex3f(-2, -1, 10);
 		glVertex3f(-3, -1, 10);
@@ -701,7 +796,7 @@ void OpenGL::DrawPolygon3()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(-2, 1, -10);
 		glVertex3f(-2, 1, 10);
 		glVertex3f(-3, 1, 10);
@@ -724,7 +819,6 @@ void OpenGL::DrawPolygon4()
 		glVertex3f(-2, 4, 10);
 		glVertex3f(-2, -4, 10);
 		glVertex3f(2, -4, 10);
-
 		glEnd();
 	}
 
@@ -753,6 +847,400 @@ void OpenGL::DrawPolygon5()
 		glVertex3f(2, 4, 10);
 		glVertex3f(-2, 4, 10);
 		glVertex3f(-2, 4, -10);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glVertex3f(2, 4, -10);
+		glVertex3f(2, 4, 10);
+		glVertex3f(2, 40, 10);
+		glVertex3f(2, 40, -10);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glVertex3f(-2, 4, -10);
+		glVertex3f(-2, 4, 10);
+		glVertex3f(-2, 40, 10);
+		glVertex3f(-2, 40, -10);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glVertex3f(2, 40, -10);
+		glVertex3f(2, 40, 10);
+		glVertex3f(-2, 40, 10);
+		glVertex3f(-2, 40, -10);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glVertex3f(2, 4, 10);
+		glVertex3f(2, 40, 10);
+		glVertex3f(-2, 40, 10);
+		glVertex3f(-2, 4, 10);
+
+		glEnd();
+	}
+
+	glPopMatrix();
+}
+
+void OpenGL::DrawPuzzleRoom()
+{
+	glPushMatrix();
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glVertex3f(10, -4, -10);
+		glVertex3f(-10, -4, -10);
+		glVertex3f(-10, -4, -40);
+		glVertex3f(10, -4, -40);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glVertex3f(10,20, -10);
+		glVertex3f(-10, 20, -10);
+		glVertex3f(-10, 20, -40);
+		glVertex3f(10, 20, -40);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(10, -4, -10);
+		glVertex3f(10, 20, -10);
+		glVertex3f(10, 20, -40);
+		glVertex3f(10, -4, -40);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(-10, -4, -10);
+		glVertex3f(-10, 20, -10);
+		glVertex3f(-10, 20, -40);
+		glVertex3f(-10, -4, -40);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(-10, -4, -10);
+		glVertex3f(-10, 20, -10);
+		glVertex3f(-2, 20, -10);
+		glVertex3f(-2, -4, -10);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(10, -4, -10);
+		glVertex3f(10, 20, -10);
+		glVertex3f(2, 20, -10);
+		glVertex3f(2, -4, -10);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glVertex3f(10, -4, -40);
+		glVertex3f(10, 20, -40);
+		glVertex3f(-10, 20, -40);
+		glVertex3f(-10, -4, -40);
+
+		glEnd();
+	}
+
+	glPopMatrix();
+}
+
+void OpenGL::DrawPuzzle1()
+{
+	glPushMatrix();
+	glTranslatef(-6, 15, -39);
+	glRotatef(rotation * 1.1, 0, 1, 0);
+	glTranslatef(6, -15, 39);
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 1, 1, 1);
+		glVertex3f(-9, 18, -39);
+		glVertex3f(-3, 18, -39);
+		glVertex3f(-3, 12, -39);
+		glVertex3f(-9, 12, -39);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0, 1, 1, 1);
+		glVertex3f(-9, 18, -39.01f);
+		glVertex3f(-3, 18, -39.01f);
+		glVertex3f(-3, 12, -39.01f);
+		glVertex3f(-9, 12, -39.01f);
+
+		glEnd();
+	}
+
+	glPopMatrix();
+}
+
+void OpenGL::DrawPuzzle2()
+{
+	glPushMatrix();
+	glTranslatef(0, 15, -39);
+	glRotatef(rotation * 1.1, 0, 1, 0);
+	glTranslatef(0, -15, 39);
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 1, 1, 1);
+		glVertex3f(-3, 18, -39);
+		glVertex3f(3, 18, -39);
+		glVertex3f(3, 12, -39);
+		glVertex3f(-3, 12, -39);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 0, 1, 1);
+		glVertex3f(-3, 18, -39.01f);
+		glVertex3f(3, 18, -39.01f);
+		glVertex3f(3, 12, -39.01f);
+		glVertex3f(-3, 12, -39.01f);
+
+		glEnd();
+	}
+
+	glPopMatrix();
+}
+
+void OpenGL::DrawPuzzle3()
+{
+	glPushMatrix();
+	glTranslatef(6, 15, -39);
+	glRotatef(rotation * 1.1, 0, 1, 0);
+	glTranslatef(-6, -15, 39);
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 1, 1, 1);
+		glVertex3f(3, 18, -39);
+		glVertex3f(9, 18, -39);
+		glVertex3f(9, 12, -39);
+		glVertex3f(3, 12, -39);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 1, 0, 1);
+		glVertex3f(3, 18, -39.01f);
+		glVertex3f(9, 18, -39.01f);
+		glVertex3f(9, 12, -39.01f);
+		glVertex3f(3, 12, -39.01f);
+
+		glEnd();
+	}
+
+	glPopMatrix();
+}
+
+void OpenGL::DrawPuzzle4()
+{
+	glPushMatrix();
+	glTranslatef(-6, 9, -39);
+	glRotatef(rotation * 1.1, 0, 1, 0);
+	glTranslatef(6, -9, 39);
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 1, 1, 1);
+		glVertex3f(-9, 12, -39);
+		glVertex3f(-3, 12, -39);
+		glVertex3f(-3, 6, -39);
+		glVertex3f(-9, 6, -39);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 0, 0, 1);
+		glVertex3f(-9, 12, -39.01f);
+		glVertex3f(-3, 12, -39.01f);
+		glVertex3f(-3, 6, -39.01f);
+		glVertex3f(-9, 6, -39.01f);
+
+		glEnd();
+	}
+
+	glPopMatrix();
+}
+
+void OpenGL::DrawPuzzle5()
+{
+	glPushMatrix();
+	glTranslatef(0, 9, -39);
+	glRotatef(rotation * 1.1, 0, 1, 0);
+	glTranslatef(0, -9, 39);
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 1, 1, 1);
+		glVertex3f(-3, 12, -39);
+		glVertex3f(3, 12, -39);
+		glVertex3f(3, 6, -39);
+		glVertex3f(-3, 6, -39);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 1, 0, 1);
+		glVertex3f(-3, 12, -39.01f);
+		glVertex3f(3, 12, -39.01f);
+		glVertex3f(3, 6, -39.01f);
+		glVertex3f(-3, 6, -39.01f);
+
+		glEnd();
+	}
+
+	glPopMatrix();
+}
+
+void OpenGL::DrawPuzzle6()
+{
+	glPushMatrix();
+	glTranslatef(6, 9, -39);
+	glRotatef(rotation * 1.1, 0, 1, 0);
+	glTranslatef(-6, -9, 39);
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 1, 1, 1);
+		glVertex3f(3, 12, -39);
+		glVertex3f(9, 12, -39);
+		glVertex3f(9, 6, -39);
+		glVertex3f(3, 6, -39);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 0, 0, 1);
+		glVertex3f(3, 12, -39.01f);
+		glVertex3f(9, 12, -39.01f);
+		glVertex3f(9, 6, -39.01f);
+		glVertex3f(3, 6, -39.01f);
+
+		glEnd();
+	}
+
+	glPopMatrix();
+}
+
+void OpenGL::DrawPuzzle7()
+{
+	glPushMatrix();
+	glTranslatef(-6, 3, -39);
+	glRotatef(rotation * 1.1, 0, 1, 0);
+	glTranslatef(6, -3, 39);
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 1, 1, 1);
+		glVertex3f(-9, 6, -39);
+		glVertex3f(-3, 6, -39);
+		glVertex3f(-3, 0, -39);
+		glVertex3f(-9, 0, -39);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0, 1, 1, 1);
+		glVertex3f(-9, 6, -39.01f);
+		glVertex3f(-3, 6, -39.01f);
+		glVertex3f(-3, 0, -39.01f);
+		glVertex3f(-9, 0, -39.01f);
+
+		glEnd();
+	}
+
+	glPopMatrix();
+}
+
+void OpenGL::DrawPuzzle8()
+{
+	glPushMatrix();
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0, 0, 0, 1);
+		glVertex3f(-3, 6, -39.f);
+		glVertex3f(3, 6, -39.f);
+		glVertex3f(3, 0, -39.f);
+		glVertex3f(-3, 0, -39.f);
+
+		glEnd();
+	}
+
+	glPopMatrix();
+}
+
+void OpenGL::DrawPuzzle9()
+{
+	glPushMatrix();
+	glTranslatef(6, 3, -39);
+	glRotatef(rotation * 1.1, 0, 1, 0);
+	glTranslatef(-6, -3, 39);
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 1, 1, 1);
+		glVertex3f(3, 6, -39);
+		glVertex3f(9, 6, -39);
+		glVertex3f(9, 0, -39);
+		glVertex3f(3, 0, -39);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(1, 0, 1, 1);
+		glVertex3f(3, 6, -39.01f);
+		glVertex3f(9, 6, -39.01f);
+		glVertex3f(9, 0, -39.01f);
+		glVertex3f(3, 0, -39.01f);
 
 		glEnd();
 	}
