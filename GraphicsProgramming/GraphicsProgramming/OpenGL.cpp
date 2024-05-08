@@ -57,8 +57,19 @@ bool isWPressed = false;
 bool isAPressed = false;
 bool isSPressed = false;
 bool isDPressed = false;
+bool isEnterPressed = false;
 
 float rotation = 0;
+float rotatePuzzle1 = 0;
+float rotatePuzzle2 = 0;
+float rotatePuzzle3 = 0;
+float rotatePuzzle4 = 0;
+float rotatePuzzle5 = 0;
+float rotatePuzzle6 = 0;
+float rotatePuzzle7 = 0;
+float rotatePuzzle8 = 0;
+float rotatePuzzle9 = 0;
+
 float fx = 0.2;
 float bx = -fx;
 
@@ -71,6 +82,13 @@ bool moveRight = true;
 bool moveUp = true;
 
 bool skyboxSpawned = false;
+bool onPuzzle = false;
+bool flipBack = false;
+
+int puzzleCounter = 0;
+int puzzleCorrect = 0;
+
+bool puzzleComplete = false;
 
 //Texture2D* f;
 GLuint f;
@@ -89,6 +107,23 @@ string CubeMap[]
 	"yellowcloud_rt.jpg",
 	"yellowcloud_up.jpg"
 };
+
+vector<vector<bool>> isFlipped =
+{
+	{false, false, false},
+	{false, false, false},
+	{false, false, false}
+};
+
+vector<vector<bool>> isSelected =
+{
+	{false, false, false},
+	{false, false, false},
+	{false, false, false}
+};
+
+int currentSelectionVertical;
+int currentSelectionHorizontal;
 
 vector<vector<float>> geometryCoordsHorizontal =
 {
@@ -172,8 +207,17 @@ void DepthCollidersCheck(float &localSpeedZ)
 	}
 }
 
-
-
+void PuzzleTirggerCollider()
+{
+	if (cameraOffsetZ < 27 && cameraOffsetZ > 23 && cameraOffsetX < 2 && cameraOffsetX > -2)
+	{
+		onPuzzle = true;
+	}
+	else 
+	{
+		onPuzzle = false;
+	}
+}
 
 int LoadTextureTGA(const char* textureFileName)
 {
@@ -241,7 +285,85 @@ int LoadTextureTGA(const char* textureFileName)
 	return ID;
 }
 
+void FlipPuzzleSquare(int x, int y)
+{
+	isFlipped[y][x] = true;
+}
 
+void PuzzleMechanic()
+{
+	bool firstTime = true;
+	while (true)
+	{
+		while (onPuzzle == true)
+		{
+			if (firstTime == true)
+			{
+				currentSelectionVertical = 1;
+				currentSelectionHorizontal = 1;
+				isSelected[1][1] = true;
+				firstTime = false;
+			}
+
+			if (isEnterPressed)
+			{
+				if (isFlipped[currentSelectionVertical][currentSelectionHorizontal] == false)
+				{
+					puzzleCounter++;
+					isEnterPressed = false;
+					FlipPuzzleSquare(currentSelectionHorizontal, currentSelectionVertical);
+
+					if (puzzleCounter == 2)
+					{
+						this_thread::sleep_for(chrono::seconds(2));
+						flipBack = true;
+						puzzleCounter = 0;
+						this_thread::sleep_for(chrono::seconds(1));
+						flipBack = false;
+					}
+				}
+				else
+				{
+					isEnterPressed = false;
+				}
+			}
+			
+			if (puzzleComplete == false)
+			{
+				for (int a = 0; a < 3; a++)
+				{
+					for (int b = 0; b < 3; b++)
+					{
+						if (isFlipped[a][b])
+						{
+							puzzleCorrect++;
+						}
+					}
+				}
+
+				if (puzzleCorrect == 8)
+				{
+					puzzleComplete = true;
+				}
+
+				puzzleCorrect = 0;
+			}
+		}
+
+		if (firstTime == false) 
+		{
+			for (int a = 0; a < 3; a++)
+			{
+				for (int b = 0; b < 3; b++)
+				{
+					isSelected[a][b] = false;
+				}
+			}
+
+			firstTime = true;
+		}
+	}
+}
 
 bool Texture2D::LoadRAW(const char* path, int width, int height)
 {
@@ -301,6 +423,12 @@ void KeyboardInputDown(unsigned char key, int x, int y)
 	case 's':
 		isSPressed = true;
 		break;
+	case 13:
+		if (onPuzzle && puzzleCounter != 2)
+		{
+			isEnterPressed = true;
+		}
+		break;
 	}
 }
 
@@ -327,6 +455,60 @@ void KeyboardInputUp(unsigned char key, int x, int y)
 	case 'u':
 		bExit = true;
 		break;
+	}
+}
+
+void SpecialInput(int key, int x, int y)
+{
+	switch (key)
+	{
+	case GLUT_KEY_UP:
+		if (onPuzzle)
+		{
+			if (currentSelectionVertical - 1 >= 0)
+			{
+				isSelected[currentSelectionVertical][currentSelectionHorizontal] = false;
+				currentSelectionVertical--;
+				isSelected[currentSelectionVertical][currentSelectionHorizontal] = true;
+			}
+		}
+	break;
+
+	case GLUT_KEY_LEFT:
+		if (onPuzzle)
+		{
+			if (currentSelectionHorizontal - 1 >= 0 && isSelected[2][2] == false)
+			{
+				isSelected[currentSelectionVertical][currentSelectionHorizontal] = false;
+				currentSelectionHorizontal--;
+				isSelected[currentSelectionVertical][currentSelectionHorizontal] = true;
+			}
+		}
+	break;
+
+	case GLUT_KEY_RIGHT:
+		if (onPuzzle)
+		{
+			if (currentSelectionHorizontal + 1 <= 2 && isSelected[2][0] == false)
+			{
+				isSelected[currentSelectionVertical][currentSelectionHorizontal] = false;
+				currentSelectionHorizontal++;
+				isSelected[currentSelectionVertical][currentSelectionHorizontal] = true;
+			}
+		}
+	break;
+
+	case GLUT_KEY_DOWN:
+		if (onPuzzle)
+		{
+			if (currentSelectionVertical + 1 <= 2 && isSelected[1][1] == false)
+			{
+				isSelected[currentSelectionVertical][currentSelectionHorizontal] = false;
+				currentSelectionVertical++;
+				isSelected[currentSelectionVertical][currentSelectionHorizontal] = true;
+			}
+		}
+	break;
 	}
 }
 
@@ -433,6 +615,7 @@ OpenGL::OpenGL(int argc, char* argv[])
 	glutDisplayFunc(GLUTCallbacks::Display);
 	glutKeyboardFunc(KeyboardInputDown);
 	glutKeyboardUpFunc(KeyboardInputUp);
+	glutSpecialFunc(SpecialInput);
 	glutPassiveMotionFunc(MouseInput);
 	glutIgnoreKeyRepeat(1);
 	Update(1000 / 60);
@@ -446,6 +629,8 @@ int main(int argc, char* argv[])
 	float offset = dist(rd);
 	fx = offset;
 	bx = offset - 0.5;
+
+	thread puzzle(PuzzleMechanic);
 
 	offset = dist(rd);
 	ty = offset;
@@ -473,6 +658,7 @@ void OpenGL::Display()
 
 	HorizontalCollidersCheck(localSpeedX);
 	DepthCollidersCheck(localSpeedZ);
+	PuzzleTirggerCollider();
 
 	glTranslatef(-localSpeedX, cameraPosY, localSpeedZ);
 
@@ -979,33 +1165,90 @@ void OpenGL::DrawPuzzleRoom()
 		glEnd();
 	}
 
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0, 0, 0, 1);
+		glVertex3f(2, -3.9, -27);
+		glVertex3f(2, -3.9, -23);
+		glVertex3f(-2, -3.9, -23);
+		glVertex3f(-2, -3.9, -27);
+
+		glEnd();
+	}
+
 	glPopMatrix();
 }
 
 void OpenGL::DrawPuzzle1()
 {
 	glPushMatrix();
-	glTranslatef(-6, 15, -39);
-	glRotatef(rotation * 1.1, 0, 1, 0);
-	glTranslatef(6, -15, 39);
+
+	if (isFlipped[0][0])
+	{
+		glTranslatef(-6, 15, -39.9);
+		glRotatef(rotatePuzzle1, 0, 1, 0);
+		glTranslatef(6, -15, 39.9);
+
+		if (flipBack == true)
+		{
+			if (isFlipped[0][0] && isFlipped[2][0])
+			{
+				
+			}
+			else
+			{
+				if (rotatePuzzle1 > 0)
+				{
+					rotatePuzzle1 -= 5;
+				}
+				else
+				{
+					isFlipped[0][0] = false;
+				}
+			}
+		}
+		else 
+		{
+			if (rotatePuzzle1 < 180)
+			{
+				rotatePuzzle1 += 5;
+			}
+		}
+	}
+
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 1, 1, 1);
-		glVertex3f(-9, 18, -39);
-		glVertex3f(-3, 18, -39);
-		glVertex3f(-3, 12, -39);
-		glVertex3f(-9, 12, -39);
+		if (isSelected[0][0])
+		{
+			glColor4f(1, 0.8, 0, 1);
+		}
+		else 
+		{
+			glColor4f(1, 1, 1, 1);
+		}
+		glVertex3f(-9, 18, -39.9);
+		glVertex3f(-3, 18, -39.9);
+		glVertex3f(-3, 12, -39.9);
+		glVertex3f(-9, 12, -39.9);
 
 		glEnd();
 	}
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0, 1, 1, 1);
-		glVertex3f(-9, 18, -39.01f);
-		glVertex3f(-3, 18, -39.01f);
-		glVertex3f(-3, 12, -39.01f);
-		glVertex3f(-9, 12, -39.01f);
+		if (puzzleComplete == true)
+		{
+			glColor4f(0, 1, 0, 1);
+		}
+		else
+		{
+			glColor4f(0, 1, 1, 1);
+		}
+		
+		glVertex3f(-9, 18, -39.902f);
+		glVertex3f(-3, 18, -39.902f);
+		glVertex3f(-3, 12, -39.902f);
+		glVertex3f(-9, 12, -39.902f);
 
 		glEnd();
 	}
@@ -1016,27 +1259,73 @@ void OpenGL::DrawPuzzle1()
 void OpenGL::DrawPuzzle2()
 {
 	glPushMatrix();
-	glTranslatef(0, 15, -39);
-	glRotatef(rotation * 1.1, 0, 1, 0);
-	glTranslatef(0, -15, 39);
+
+	if (isFlipped[0][1])
+	{
+		glTranslatef(0, 15, -39.9);
+		glRotatef(rotatePuzzle2, 0, 1, 0);
+		glTranslatef(0, -15, 39.9);
+
+		if (flipBack == true)
+		{
+			if (isFlipped[0][1] && isFlipped[2][2])
+			{
+				
+			}
+			else
+			{
+				if (rotatePuzzle2 > 0)
+				{
+					rotatePuzzle2 -= 5;
+				}
+				else
+				{
+					isFlipped[0][1] = false;
+				}
+			}
+		}
+		else
+		{
+			if (rotatePuzzle2 < 180)
+			{
+				rotatePuzzle2 += 5;
+			}
+		}
+	}
+
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 1, 1, 1);
-		glVertex3f(-3, 18, -39);
-		glVertex3f(3, 18, -39);
-		glVertex3f(3, 12, -39);
-		glVertex3f(-3, 12, -39);
+		if (isSelected[0][1])
+		{
+			glColor4f(1, 0.8, 0, 1);
+		}
+		else
+		{
+			glColor4f(1, 1, 1, 1);
+		}
+		glVertex3f(-3, 18, -39.9);
+		glVertex3f(3, 18, -39.9);
+		glVertex3f(3, 12, -39.9);
+		glVertex3f(-3, 12, -39.9);
 
 		glEnd();
 	}
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 0, 1, 1);
-		glVertex3f(-3, 18, -39.01f);
-		glVertex3f(3, 18, -39.01f);
-		glVertex3f(3, 12, -39.01f);
-		glVertex3f(-3, 12, -39.01f);
+		if (puzzleComplete == true)
+		{
+			glColor4f(0, 1, 0, 1);
+		}
+		else
+		{
+			glColor4f(1, 0, 1, 1);
+		}
+		
+		glVertex3f(-3, 18, -39.902f);
+		glVertex3f(3, 18, -39.902f);
+		glVertex3f(3, 12, -39.902f);
+		glVertex3f(-3, 12, -39.902f);
 
 		glEnd();
 	}
@@ -1047,27 +1336,73 @@ void OpenGL::DrawPuzzle2()
 void OpenGL::DrawPuzzle3()
 {
 	glPushMatrix();
-	glTranslatef(6, 15, -39);
-	glRotatef(rotation * 1.1, 0, 1, 0);
-	glTranslatef(-6, -15, 39);
+
+	if (isFlipped[0][2])
+	{
+		glTranslatef(6, 15, -39.9);
+		glRotatef(rotatePuzzle3, 0, 1, 0);
+		glTranslatef(-6, -15, 39.9);
+
+		if (flipBack == true)
+		{
+			if (isFlipped[0][2] && isFlipped[1][1])
+			{
+				
+			}
+			else
+			{
+				if (rotatePuzzle3 > 0)
+				{
+					rotatePuzzle3 -= 5;
+				}
+				else
+				{
+					isFlipped[0][2] = false;
+				}
+			}
+		}
+		else
+		{
+			if (rotatePuzzle3 < 180)
+			{
+				rotatePuzzle3 += 5;
+			}
+		}
+	}
+
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 1, 1, 1);
-		glVertex3f(3, 18, -39);
-		glVertex3f(9, 18, -39);
-		glVertex3f(9, 12, -39);
-		glVertex3f(3, 12, -39);
+		if (isSelected[0][2])
+		{
+			glColor4f(1, 0.8, 0, 1);
+		}
+		else
+		{
+			glColor4f(1, 1, 1, 1);
+		}
+		glVertex3f(3, 18, -39.9);
+		glVertex3f(9, 18, -39.9);
+		glVertex3f(9, 12, -39.9);
+		glVertex3f(3, 12, -39.9);
 
 		glEnd();
 	}
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 1, 0, 1);
-		glVertex3f(3, 18, -39.01f);
-		glVertex3f(9, 18, -39.01f);
-		glVertex3f(9, 12, -39.01f);
-		glVertex3f(3, 12, -39.01f);
+		if (puzzleComplete == true)
+		{
+			glColor4f(0, 1, 0, 1);
+		}
+		else
+		{
+			glColor4f(1, 1, 0, 1);
+		}
+		
+		glVertex3f(3, 18, -39.902f);
+		glVertex3f(9, 18, -39.902f);
+		glVertex3f(9, 12, -39.902f);
+		glVertex3f(3, 12, -39.902f);
 
 		glEnd();
 	}
@@ -1078,27 +1413,73 @@ void OpenGL::DrawPuzzle3()
 void OpenGL::DrawPuzzle4()
 {
 	glPushMatrix();
-	glTranslatef(-6, 9, -39);
-	glRotatef(rotation * 1.1, 0, 1, 0);
-	glTranslatef(6, -9, 39);
+
+	if (isFlipped[1][0])
+	{
+		glTranslatef(-6, 9, -39.9);
+		glRotatef(rotatePuzzle4, 0, 1, 0);
+		glTranslatef(6, -9, 39.9);
+
+		if (flipBack == true)
+		{
+			if (isFlipped[1][0] && isFlipped[1][2])
+			{
+				
+			}
+			else
+			{
+				if (rotatePuzzle4 > 0)
+				{
+					rotatePuzzle4 -= 5;
+				}
+				else
+				{
+					isFlipped[1][0] = false;
+				}
+			}
+		}
+		else
+		{
+			if (rotatePuzzle4 < 180)
+			{
+				rotatePuzzle4 += 5;
+			}
+		}
+	}
+
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 1, 1, 1);
-		glVertex3f(-9, 12, -39);
-		glVertex3f(-3, 12, -39);
-		glVertex3f(-3, 6, -39);
-		glVertex3f(-9, 6, -39);
+		if (isSelected[1][0])
+		{
+			glColor4f(1, 0.8, 0, 1);
+		}
+		else
+		{
+			glColor4f(1, 1, 1, 1);
+		}
+		glVertex3f(-9, 12, -39.9);
+		glVertex3f(-3, 12, -39.9);
+		glVertex3f(-3, 6, -39.9);
+		glVertex3f(-9, 6, -39.9);
 
 		glEnd();
 	}
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 0, 0, 1);
-		glVertex3f(-9, 12, -39.01f);
-		glVertex3f(-3, 12, -39.01f);
-		glVertex3f(-3, 6, -39.01f);
-		glVertex3f(-9, 6, -39.01f);
+		if (puzzleComplete == true)
+		{
+			glColor4f(0, 1, 0, 1);
+		}
+		else
+		{
+			glColor4f(1, 0, 0, 1);
+		}
+		
+		glVertex3f(-9, 12, -39.902f);
+		glVertex3f(-3, 12, -39.902f);
+		glVertex3f(-3, 6, -39.902f);
+		glVertex3f(-9, 6, -39.902f);
 
 		glEnd();
 	}
@@ -1109,27 +1490,73 @@ void OpenGL::DrawPuzzle4()
 void OpenGL::DrawPuzzle5()
 {
 	glPushMatrix();
-	glTranslatef(0, 9, -39);
-	glRotatef(rotation * 1.1, 0, 1, 0);
-	glTranslatef(0, -9, 39);
+
+	if (isFlipped[1][1])
+	{
+		glTranslatef(0, 9, -39.9);
+		glRotatef(rotatePuzzle5, 0, 1, 0);
+		glTranslatef(0, -9, 39.9);
+
+		if (flipBack == true)
+		{
+			if (isFlipped[0][2] && isFlipped[1][1])
+			{
+				
+			}
+			else
+			{
+				if (rotatePuzzle5 > 0)
+				{
+					rotatePuzzle5 -= 5;
+				}
+				else
+				{
+					isFlipped[1][1] = false;
+				}
+			}
+		}
+		else
+		{
+			if (rotatePuzzle5 < 180)
+			{
+				rotatePuzzle5 += 5;
+			}
+		}
+	}
+
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 1, 1, 1);
-		glVertex3f(-3, 12, -39);
-		glVertex3f(3, 12, -39);
-		glVertex3f(3, 6, -39);
-		glVertex3f(-3, 6, -39);
+		if (isSelected[1][1])
+		{
+			glColor4f(1, 0.8, 0, 1);
+		}
+		else
+		{
+			glColor4f(1, 1, 1, 1);
+		}
+		glVertex3f(-3, 12, -39.9);
+		glVertex3f(3, 12, -39.9);
+		glVertex3f(3, 6, -39.9);
+		glVertex3f(-3, 6, -39.9);
 
 		glEnd();
 	}
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 1, 0, 1);
-		glVertex3f(-3, 12, -39.01f);
-		glVertex3f(3, 12, -39.01f);
-		glVertex3f(3, 6, -39.01f);
-		glVertex3f(-3, 6, -39.01f);
+		if (puzzleComplete == true)
+		{
+			glColor4f(0, 1, 0, 1);
+		}
+		else
+		{
+			glColor4f(1, 1, 0, 1);
+		}
+		
+		glVertex3f(-3, 12, -39.902f);
+		glVertex3f(3, 12, -39.902f);
+		glVertex3f(3, 6, -39.902f);
+		glVertex3f(-3, 6, -39.902f);
 
 		glEnd();
 	}
@@ -1140,27 +1567,73 @@ void OpenGL::DrawPuzzle5()
 void OpenGL::DrawPuzzle6()
 {
 	glPushMatrix();
-	glTranslatef(6, 9, -39);
-	glRotatef(rotation * 1.1, 0, 1, 0);
-	glTranslatef(-6, -9, 39);
+
+	if (isFlipped[1][2])
+	{
+		glTranslatef(6, 9, -39.9);
+		glRotatef(rotatePuzzle6, 0, 1, 0);
+		glTranslatef(-6, -9, 39.9);
+
+		if (flipBack == true)
+		{
+			if (isFlipped[1][0] && isFlipped[1][2])
+			{
+				
+			}
+			else
+			{
+				if (rotatePuzzle6 > 0)
+				{
+					rotatePuzzle6 -= 5;
+				}
+				else
+				{
+					isFlipped[1][2] = false;
+				}
+			}
+		}
+		else
+		{
+			if (rotatePuzzle6 < 180)
+			{
+				rotatePuzzle6 += 5;
+			}
+		}
+	}
+
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 1, 1, 1);
-		glVertex3f(3, 12, -39);
-		glVertex3f(9, 12, -39);
-		glVertex3f(9, 6, -39);
-		glVertex3f(3, 6, -39);
+		if (isSelected[1][2])
+		{
+			glColor4f(1, 0.8, 0, 1);
+		}
+		else
+		{
+			glColor4f(1, 1, 1, 1);
+		}
+		glVertex3f(3, 12, -39.9);
+		glVertex3f(9, 12, -39.9);
+		glVertex3f(9, 6, -39.9);
+		glVertex3f(3, 6, -39.9);
 
 		glEnd();
 	}
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 0, 0, 1);
-		glVertex3f(3, 12, -39.01f);
-		glVertex3f(9, 12, -39.01f);
-		glVertex3f(9, 6, -39.01f);
-		glVertex3f(3, 6, -39.01f);
+		if (puzzleComplete == true)
+		{
+			glColor4f(0, 1, 0, 1);
+		}
+		else
+		{
+			glColor4f(1, 0, 0, 1);
+		}
+		
+		glVertex3f(3, 12, -39.902f);
+		glVertex3f(9, 12, -39.902f);
+		glVertex3f(9, 6, -39.902f);
+		glVertex3f(3, 6, -39.902f);
 
 		glEnd();
 	}
@@ -1171,27 +1644,73 @@ void OpenGL::DrawPuzzle6()
 void OpenGL::DrawPuzzle7()
 {
 	glPushMatrix();
-	glTranslatef(-6, 3, -39);
-	glRotatef(rotation * 1.1, 0, 1, 0);
-	glTranslatef(6, -3, 39);
+
+	if (isFlipped[2][0])
+	{
+		glTranslatef(-6, 3, -39.9);
+		glRotatef(rotatePuzzle7, 0, 1, 0);
+		glTranslatef(6, -3, 39.9);
+
+		if (flipBack == true)
+		{
+			if (isFlipped[0][0] && isFlipped[2][0])
+			{
+				
+			}
+			else
+			{
+				if (rotatePuzzle7 > 0)
+				{
+					rotatePuzzle7 -= 5;
+				}
+				else
+				{
+					isFlipped[2][0] = false;
+				}
+			}
+		}
+		else
+		{
+			if (rotatePuzzle7 < 180)
+			{
+				rotatePuzzle7 += 5;
+			}
+		}
+	}
+
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 1, 1, 1);
-		glVertex3f(-9, 6, -39);
-		glVertex3f(-3, 6, -39);
-		glVertex3f(-3, 0, -39);
-		glVertex3f(-9, 0, -39);
+		if (isSelected[2][0])
+		{
+			glColor4f(1, 0.8, 0, 1);
+		}
+		else
+		{
+			glColor4f(1, 1, 1, 1);
+		}
+		glVertex3f(-9, 6, -39.9);
+		glVertex3f(-3, 6, -39.9);
+		glVertex3f(-3, 0, -39.9);
+		glVertex3f(-9, 0, -39.9);
 
 		glEnd();
 	}
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0, 1, 1, 1);
-		glVertex3f(-9, 6, -39.01f);
-		glVertex3f(-3, 6, -39.01f);
-		glVertex3f(-3, 0, -39.01f);
-		glVertex3f(-9, 0, -39.01f);
+		if (puzzleComplete == true)
+		{
+			glColor4f(0, 1, 0, 1);
+		}
+		else
+		{
+			glColor4f(0, 1, 1, 1);
+		}
+		
+		glVertex3f(-9, 6, -39.902f);
+		glVertex3f(-3, 6, -39.902f);
+		glVertex3f(-3, 0, -39.902f);
+		glVertex3f(-9, 0, -39.902f);
 
 		glEnd();
 	}
@@ -1206,10 +1725,10 @@ void OpenGL::DrawPuzzle8()
 	glBegin(GL_POLYGON);
 	{
 		glColor4f(0, 0, 0, 1);
-		glVertex3f(-3, 6, -39.f);
-		glVertex3f(3, 6, -39.f);
-		glVertex3f(3, 0, -39.f);
-		glVertex3f(-3, 0, -39.f);
+		glVertex3f(-3, 6, -39.9f);
+		glVertex3f(3, 6, -39.9f);
+		glVertex3f(3, -4, -39.9f);
+		glVertex3f(-3, -4, -39.9f);
 
 		glEnd();
 	}
@@ -1220,27 +1739,72 @@ void OpenGL::DrawPuzzle8()
 void OpenGL::DrawPuzzle9()
 {
 	glPushMatrix();
-	glTranslatef(6, 3, -39);
-	glRotatef(rotation * 1.1, 0, 1, 0);
-	glTranslatef(-6, -3, 39);
+
+	if (isFlipped[2][2])
+	{
+		glTranslatef(6, 3, -39.9);
+		glRotatef(rotatePuzzle9, 0, 1, 0);
+		glTranslatef(-6, -3, 39.9);
+
+		if (flipBack == true)
+		{
+			if (isFlipped[0][1] && isFlipped[2][2])
+			{
+				
+			}
+			else
+			{
+				if (rotatePuzzle9 > 0)
+				{
+					rotatePuzzle9 -= 5;
+				}
+				else
+				{
+					isFlipped[2][2] = false;
+				}
+			}
+		}
+		else
+		{
+			if (rotatePuzzle9 < 180)
+			{
+				rotatePuzzle9 += 5;
+			}
+		}
+	}
+
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 1, 1, 1);
-		glVertex3f(3, 6, -39);
-		glVertex3f(9, 6, -39);
-		glVertex3f(9, 0, -39);
-		glVertex3f(3, 0, -39);
+		if (isSelected[2][2])
+		{
+			glColor4f(1, 0.8, 0, 1);
+		}
+		else
+		{
+			glColor4f(1, 1, 1, 1);
+		}
+		glVertex3f(3, 6, -39.9);
+		glVertex3f(9, 6, -39.9);
+		glVertex3f(9, 0, -39.9);
+		glVertex3f(3, 0, -39.9);
 
 		glEnd();
 	}
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(1, 0, 1, 1);
-		glVertex3f(3, 6, -39.01f);
-		glVertex3f(9, 6, -39.01f);
-		glVertex3f(9, 0, -39.01f);
-		glVertex3f(3, 0, -39.01f);
+		if (puzzleComplete == true)
+		{
+			glColor4f(0, 1, 0, 1);
+		}
+		else
+		{
+			glColor4f(1, 0, 1, 1);
+		}
+		glVertex3f(3, 6, -39.902f);
+		glVertex3f(9, 6, -39.902f);
+		glVertex3f(9, 0, -39.902f);
+		glVertex3f(3, 0, -39.902f);
 
 		glEnd();
 	}
