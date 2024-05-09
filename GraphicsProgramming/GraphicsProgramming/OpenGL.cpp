@@ -90,6 +90,9 @@ int puzzleCorrect = 0;
 
 bool puzzleComplete = false;
 
+float alpha = 1;
+float skyboxCullingEdge = 99 / sqrt(3);
+
 //Texture2D* f;
 GLuint f;
 GLuint l;
@@ -138,6 +141,7 @@ vector<vector<float>> geometryCoordsDepth =
 	{-9.5, -10.5, 2.5, -2.5},
 	{10, 10.5, 10, 2.5, 1},
 	{ 10, 10.5, -2.5, -10, 1},
+	{39.5,40, 10, -10, 0},
 	{39.5,40, 10, -10, 0}
 };
 
@@ -315,10 +319,10 @@ void PuzzleMechanic()
 
 					if (puzzleCounter == 2)
 					{
-						this_thread::sleep_for(chrono::seconds(2));
+						this_thread::sleep_for(chrono::seconds(1));
 						flipBack = true;
 						puzzleCounter = 0;
-						this_thread::sleep_for(chrono::seconds(1));
+						this_thread::sleep_for(chrono::milliseconds(500));
 						flipBack = false;
 					}
 				}
@@ -344,9 +348,29 @@ void PuzzleMechanic()
 				if (puzzleCorrect == 8)
 				{
 					puzzleComplete = true;
+					skyboxCullingEdge += 15;
+					geometryCoordsDepth[3] = { 39.5,40, 10, 3, 0 };
+					geometryCoordsDepth[4] = { 39.5,40, -3, -10, 0 };
 				}
 
 				puzzleCorrect = 0;
+			}
+			else
+			{
+				if (alpha > -5)
+				{
+					alpha -= 0.01f;
+					this_thread::sleep_for(chrono::milliseconds(25));
+				}
+			}
+		}
+
+		if (puzzleComplete)
+		{
+			if (alpha > -5)
+			{
+				alpha -= 0.01f;
+				this_thread::sleep_for(chrono::milliseconds(25));
 			}
 		}
 
@@ -602,6 +626,8 @@ OpenGL::OpenGL(int argc, char* argv[])
 	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_COLOR_MATERIAL);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glEnable(GL_LIGHTING);
 	//glEnable(GL_LIGHT0);
 
@@ -682,6 +708,7 @@ void OpenGL::Display()
 	DrawPuzzle7();
 	DrawPuzzle8();
 	DrawPuzzle9();
+	DrawObservatory();
 
 	glFlush();
 
@@ -690,8 +717,6 @@ void OpenGL::Display()
 
 void OpenGL::DrawPolygon0()
 {
-	float skyboxCullingEdge = 99 / sqrt(3);
-
 	glBindTexture(GL_TEXTURE_2D, f);
 
 	glBegin(GL_QUADS);
@@ -818,7 +843,7 @@ void OpenGL::DrawPolygon()
 
 	glBegin(GL_LINE_LOOP);
 	{
-		glColor4f(0, 1, 0, 0);
+		glColor4f(0, 1, 0, 1);
 		glVertex3f(0.05, -0.05, -2);
 		glVertex3f(-0.05, -0.05, -2);
 		glVertex3f(-0.05, 0.05, -2);
@@ -829,7 +854,7 @@ void OpenGL::DrawPolygon()
 
 	glBegin(GL_LINE_LOOP);
 	{
-		glColor4f(0, 0, 1, 0);
+		glColor4f(0, 0, 1, 1);
 		glVertex3f(0.05, 0.05, -1);
 		glVertex3f(0.05, 0.05, -2);
 		glVertex3f(0.05, -0.05, -2);
@@ -840,7 +865,7 @@ void OpenGL::DrawPolygon()
 
 	glBegin(GL_LINE_LOOP);
 	{
-		glColor4f(1, 0, 1, 0);
+		glColor4f(1, 0, 1, 1);
 		glVertex3f(-0.05, 0.05, -1);
 		glVertex3f(-0.05, 0.05, -2);
 		glVertex3f(-0.05, -0.05, -2);
@@ -851,7 +876,7 @@ void OpenGL::DrawPolygon()
 
 	glBegin(GL_LINE_LOOP);
 	{
-		glColor4f(1, 1, 1, 0);
+		glColor4f(1, 1, 1, 1);
 		glVertex3f(0.05, -0.05, -1);
 		glVertex3f(-0.05, -0.05, -1);
 		glVertex3f(-0.05, -0.05, -2);
@@ -862,7 +887,7 @@ void OpenGL::DrawPolygon()
 
 	glBegin(GL_LINE_LOOP);
 	{
-		glColor4f(1, 1, 0, 0);
+		glColor4f(1, 1, 0, 1);
 		glVertex3f(0.05, 0.05, -1);
 		glVertex3f(-0.05, 0.05, -1);
 		glVertex3f(-0.05, 0.05, -2);
@@ -1000,7 +1025,7 @@ void OpenGL::DrawPolygon4()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(2, 4, 10);
 		glVertex3f(-2, 4, 10);
 		glVertex3f(-2, -4, 10);
@@ -1017,7 +1042,7 @@ void OpenGL::DrawPolygon5()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glColor4f(0.4, 0.4, 0.4, 1);
 		glVertex3f(2, -4, -10);
 		glVertex3f(2, -4, 10);
 		glVertex3f(-2, -4, 10);
@@ -1028,7 +1053,7 @@ void OpenGL::DrawPolygon5()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glColor4f(0.4, 0.4, 0.4, 1);
 		glVertex3f(2, 4, -10);
 		glVertex3f(2, 4, 10);
 		glVertex3f(-2, 4, 10);
@@ -1039,7 +1064,7 @@ void OpenGL::DrawPolygon5()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glColor4f(0.4, 0.4, 0.4, 1);
 		glVertex3f(2, 4, -10);
 		glVertex3f(2, 4, 10);
 		glVertex3f(2, 40, 10);
@@ -1050,7 +1075,7 @@ void OpenGL::DrawPolygon5()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glColor4f(0.4, 0.4, 0.4, 1);
 		glVertex3f(-2, 4, -10);
 		glVertex3f(-2, 4, 10);
 		glVertex3f(-2, 40, 10);
@@ -1061,7 +1086,7 @@ void OpenGL::DrawPolygon5()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glColor4f(0.4, 0.4, 0.4, 1);
 		glVertex3f(2, 40, -10);
 		glVertex3f(2, 40, 10);
 		glVertex3f(-2, 40, 10);
@@ -1072,7 +1097,7 @@ void OpenGL::DrawPolygon5()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glColor4f(0.4, 0.4, 0.4, 1);
 		glVertex3f(2, 4, 10);
 		glVertex3f(2, 40, 10);
 		glVertex3f(-2, 40, 10);
@@ -1090,7 +1115,7 @@ void OpenGL::DrawPuzzleRoom()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glColor4f(0.4, 0.4, 0.4, 1);
 		glVertex3f(10, -4, -10);
 		glVertex3f(-10, -4, -10);
 		glVertex3f(-10, -4, -40);
@@ -1101,7 +1126,7 @@ void OpenGL::DrawPuzzleRoom()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.4, 0.4, 0.4, 0.4);
+		glColor4f(0.4, 0.4, 0.4, 1);
 		glVertex3f(10,20, -10);
 		glVertex3f(-10, 20, -10);
 		glVertex3f(-10, 20, -40);
@@ -1112,7 +1137,7 @@ void OpenGL::DrawPuzzleRoom()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(10, -4, -10);
 		glVertex3f(10, 20, -10);
 		glVertex3f(10, 20, -40);
@@ -1123,7 +1148,7 @@ void OpenGL::DrawPuzzleRoom()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(-10, -4, -10);
 		glVertex3f(-10, 20, -10);
 		glVertex3f(-10, 20, -40);
@@ -1134,7 +1159,7 @@ void OpenGL::DrawPuzzleRoom()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(-10, -4, -10);
 		glVertex3f(-10, 20, -10);
 		glVertex3f(-2, 20, -10);
@@ -1145,7 +1170,7 @@ void OpenGL::DrawPuzzleRoom()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(10, -4, -10);
 		glVertex3f(10, 20, -10);
 		glVertex3f(2, 20, -10);
@@ -1156,11 +1181,33 @@ void OpenGL::DrawPuzzleRoom()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.3, 0.3, 0.3, 0.3);
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(10, -4, -40);
 		glVertex3f(10, 20, -40);
-		glVertex3f(-10, 20, -40);
+		glVertex3f(3, 20, -40);
+		glVertex3f(3, -4, -40);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(-10, -4, -40);
+		glVertex3f(-10, 20, -40);
+		glVertex3f(-3, 20, -40);
+		glVertex3f(-3, -4, -40);
+
+		glEnd();
+	}
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 1);
+		glVertex3f(3, 6, -40);
+		glVertex3f(3, 20, -40);
+		glVertex3f(-3, 20, -40);
+		glVertex3f(-3, 6, -40);
 
 		glEnd();
 	}
@@ -1172,6 +1219,24 @@ void OpenGL::DrawPuzzleRoom()
 		glVertex3f(2, -3.9, -23);
 		glVertex3f(-2, -3.9, -23);
 		glVertex3f(-2, -3.9, -27);
+
+		glEnd();
+	}
+
+	glPopMatrix();
+}
+
+void OpenGL::DrawObservatory()
+{
+	glPushMatrix();
+
+	glBegin(GL_POLYGON);
+	{
+		glColor4f(0.3, 0.3, 0.3, 1);
+		glVertex3f(-3, -4, -40);
+		glVertex3f(-3, -4, -50);
+		glVertex3f(-3, 4, -50);
+		glVertex3f(-3, 4, -40);
 
 		glEnd();
 	}
@@ -1724,11 +1789,11 @@ void OpenGL::DrawPuzzle8()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0, 0, 0, 1);
-		glVertex3f(-3, 6, -39.9f);
-		glVertex3f(3, 6, -39.9f);
-		glVertex3f(3, -4, -39.9f);
-		glVertex3f(-3, -4, -39.9f);
+		glColor4f(0, 0, 0, alpha);
+		glVertex3f(-3, 6, -40);
+		glVertex3f(3, 6, -40);
+		glVertex3f(3, -4, -40);
+		glVertex3f(-3, -4, -40);
 
 		glEnd();
 	}

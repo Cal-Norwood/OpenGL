@@ -30,4 +30,5 @@ public:
 	   void DrawPuzzle7();
 	   void DrawPuzzle8();
 	   void DrawPuzzle9();
+	   void DrawObservatory();
 };
