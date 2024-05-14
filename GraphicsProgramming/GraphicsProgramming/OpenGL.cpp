@@ -86,6 +86,9 @@ bool onPuzzle = false;
 bool onObservatory = false;
 bool flipBack = false;
 
+bool freezePlayer = false;
+float rotatePlayerForCutscene = 0;
+
 int puzzleCounter = 0;
 int puzzleCorrect = 0;
 
@@ -394,7 +397,6 @@ void PuzzleMechanic()
 				alpha -= 0.01f;
 				this_thread::sleep_for(chrono::milliseconds(25));
 			}
-
 		}
 
 		if (firstTime == false) 
@@ -408,6 +410,21 @@ void PuzzleMechanic()
 			}
 
 			firstTime = true;
+		}
+	}
+}
+
+void ObservatoryHandler()
+{
+	while (true)
+	{
+		while (onObservatory)
+		{
+			if (isEnterPressed)
+			{
+				freezePlayer = true;
+				isEnterPressed = false;
+			}
 		}
 	}
 }
@@ -453,29 +470,39 @@ Texture2D* LoadTextureAndBind(const char* tex)
 
 void KeyboardInputDown(unsigned char key, int x, int y)
 {
-	switch (key)
+	if (!freezePlayer)
 	{
-	case 'w':
-		isWPressed = true;
-		break;
-
-	case 'a':
-		isAPressed = true;
-		break;
-
-	case 'd':
-		isDPressed = true;
-		break;
-
-	case 's':
-		isSPressed = true;
-		break;
-	case 13:
-		if (onPuzzle && puzzleCounter != 2)
+		switch (key)
 		{
-			isEnterPressed = true;
+		case 'w':
+			isWPressed = true;
+			break;
+
+		case 'a':
+			isAPressed = true;
+			break;
+
+		case 'd':
+			isDPressed = true;
+			break;
+
+		case 's':
+			isSPressed = true;
+			break;
+		case 13:
+			if (onPuzzle && puzzleCounter != 2 || onObservatory)
+			{
+				isEnterPressed = true;
+			}
+			break;
 		}
-		break;
+	}
+	else 
+	{
+		isWPressed = false;
+		isAPressed = false;
+		isDPressed = false;
+		isSPressed = false;
 	}
 }
 
@@ -580,14 +607,21 @@ void MouseInput(int x, int y)
 	{
 		horizontal = fabs(x) * sensitivity;
 	}
-	
-	cameraRotationY += horizontal;
 
 	vertical = x * sensitivity;
 
 	//cout << horizontal << endl;
 	glTranslatef(-cameraOffsetX, 0, -cameraOffsetZ);
-	glRotatef(horizontal, 0.0f, 1.0f, 0.0f);
+	if(!freezePlayer)
+	{
+		glRotatef(horizontal, 0.0f, 1.0f, 0.0f);
+		cameraRotationY += horizontal;
+
+		if (fabs(cameraRotationY) > 360)
+		{
+			cameraRotationY = 0;
+		}
+	}
 	glTranslatef(cameraOffsetX, 0, cameraOffsetZ);
 	//glRotatef(vertical, 1.0f, 0.0f, 0.0f);
 
@@ -680,6 +714,7 @@ int main(int argc, char* argv[])
 	bx = offset - 0.5;
 
 	thread puzzle(PuzzleMechanic);
+	thread observatory(ObservatoryHandler);
 
 	offset = dist(rd);
 	ty = offset;
@@ -703,12 +738,44 @@ void OpenGL::Display()
 	float localSpeedX = (-cameraSpeedX * cosAngle) + (cameraSpeedZ * sinAngle);
 	float localSpeedZ = (cameraSpeedX * sinAngle) + (cameraSpeedZ * cosAngle);
 
-	cout << cameraOffsetZ << endl;
-
 	HorizontalCollidersCheck(localSpeedX);
 	DepthCollidersCheck(localSpeedZ);
 	PuzzleTirggerCollider();
 	ObservatoryTriggerCollider();
+
+	//cout << localSpeedX << endl;
+	cout << cameraRotationY << endl;
+
+	if (freezePlayer)
+	{
+		if (rotatePlayerForCutscene > -90)
+		{
+			glTranslatef(-cameraOffsetX, 0, -cameraOffsetZ);
+			glRotatef(-1, 1 * cosAngle, 0, 1 * sinAngle);
+			glTranslatef(cameraOffsetX, 0, cameraOffsetZ);
+			rotatePlayerForCutscene -= 1;
+		}
+		else if (fabs(cameraRotationY) >= 1.5f)
+		{
+			glTranslatef(-cameraOffsetX, 0, -cameraOffsetZ);
+			cout << "working" << endl;
+			if (cameraRotationY < 0)
+			{
+				glRotatef(1.9, 0, 1, 0);
+				cameraRotationY += 1.9;
+			}
+			else 
+			{
+				glRotatef(-1.9, 0, 1, 0);
+				cameraRotationY -= 1.9;
+			}
+			glTranslatef(cameraOffsetX, 0, cameraOffsetZ);
+		}
+		else 
+		{
+
+		}
+	}
 
 	glTranslatef(-localSpeedX, cameraPosY, localSpeedZ);
 
@@ -2029,17 +2096,13 @@ void OpenGL::DrawObservatoryRoof()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.2, 0.2, 0.2, 1);
+		glColor4f(0.25, 0.25, 0.25, 1);
 		glVertex3f(10, 20, -50);
 		glVertex3f(-10, 20, -50);
 		glVertex3f(0, 30, -60);
 
 		glEnd();
 	}
-
-	glPopMatrix();
-
-	glPushMatrix();
 
 	glBegin(GL_POLYGON);
 	{
@@ -2063,7 +2126,7 @@ void OpenGL::DrawObservatoryRoof()
 
 	glBegin(GL_POLYGON);
 	{
-		glColor4f(0.2, 0.2, 0.2, 1);
+		glColor4f(0.25, 0.25, 0.25, 1);
 		glVertex3f(10, 20, -70);
 		glVertex3f(-10, 20, -70);
 		glVertex3f(0, 30, -60);
