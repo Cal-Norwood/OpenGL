@@ -72,6 +72,11 @@ float rotatePuzzle7 = 0;
 float rotatePuzzle8 = 0;
 float rotatePuzzle9 = 0;
 
+float rotationRoof1 = 0;
+float rotationRoof2 = 0;
+float rotationRoof3 = 0;
+float rotationRoof4 = 0;
+
 float fx = 0.2;
 float bx = -fx;
 
@@ -424,6 +429,17 @@ void ObservatoryHandler()
 			{
 				freezePlayer = true;
 				isEnterPressed = false;
+			}
+			else if (rotatePlayerForCutscene < -80)
+			{
+				if (rotationRoof1 < 90)
+				{
+					rotationRoof1 += 0.05;
+					rotationRoof2 += 0.05;
+					rotationRoof3 += 0.05;
+					rotationRoof4 -= 0.05;
+					this_thread::sleep_for(chrono::milliseconds(50));
+				}
 			}
 		}
 	}
@@ -2094,6 +2110,9 @@ void OpenGL::DrawObservatoryRoof()
 {
 	glPushMatrix();
 
+	glTranslatef(0, -23.33, 53.33);
+	glRotatef(rotationRoof1, 1, 0, 0);
+	glTranslatef(0, 23.33,-53.33);
 	glBegin(GL_POLYGON);
 	{
 		glColor4f(0.25, 0.25, 0.25, 1);
@@ -2104,6 +2123,13 @@ void OpenGL::DrawObservatoryRoof()
 		glEnd();
 	}
 
+	glPopMatrix();
+
+	glPushMatrix();
+
+	glTranslatef(0, -23.33, 53.3);
+	glRotatef(rotationRoof2, 0, 0, -1);
+	glTranslatef(0, 23.33, -53.3);
 	glBegin(GL_POLYGON);
 	{
 		glColor4f(0.2, 0.2, 0.2, 1);
@@ -2114,6 +2140,13 @@ void OpenGL::DrawObservatoryRoof()
 		glEnd();
 	}
 
+	glPopMatrix();
+
+	glPushMatrix();
+
+	glTranslatef(0, -23.33, 53.3);
+	glRotatef(rotationRoof3, 0, 0, 1);
+	glTranslatef(0, 23.33, -53.3);
 	glBegin(GL_POLYGON);
 	{
 		glColor4f(0.2, 0.2, 0.2, 1);
@@ -2124,6 +2157,13 @@ void OpenGL::DrawObservatoryRoof()
 		glEnd();
 	}
 
+	glPopMatrix();
+
+	glPushMatrix();
+
+	glTranslatef(0, -23.33, 53.3);
+	glRotatef(rotationRoof4, 1, 0, 0);
+	glTranslatef(0, 23.33, -53.3);
 	glBegin(GL_POLYGON);
 	{
 		glColor4f(0.25, 0.25, 0.25, 1);
