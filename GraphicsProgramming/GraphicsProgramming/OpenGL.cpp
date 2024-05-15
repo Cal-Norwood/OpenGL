@@ -34,11 +34,17 @@ public:
 	int GetHeight() const { return _height; }
 };
 
+string model_name = "StrikeBack.mtl.obj";
+
+Model model;
+
 bool bExit = false;
 
 float cameraSpeedX = 0;
 float cameraPosY = 0;
 float cameraSpeedZ = 0;
+
+float pos_x = 0, pos_y = 0, pos_z = 0;
 
 float cameraOffsetX = 0;
 float cameraOffsetY = 0;
@@ -113,6 +119,8 @@ GLuint u;
 GLuint d;
 
 GLuint s;
+
+GLuint a;
 
 string CubeMap[]
 {
@@ -436,7 +444,7 @@ void ObservatoryHandler()
 				{
 					skyboxCullingEdge += 20;
 					counter++;
-				}
+		 		}
 			}
 			else if (rotatePlayerForCutscene < -80)
 			{
@@ -711,6 +719,7 @@ OpenGL::OpenGL(int argc, char* argv[])
 	glDisable(GL_COLOR_MATERIAL);
 	//glEnable(GL_LIGHTING);
 	//glEnable(GL_LIGHT0);
+	model.load(model_name.c_str());
 
 	f = LoadTextureTGA("yellowcloud_ft.tga");
 	l = LoadTextureTGA("yellowcloud_lf.tga");
@@ -720,6 +729,8 @@ OpenGL::OpenGL(int argc, char* argv[])
 	d = LoadTextureTGA("yellowcloud_dn.tga");
 
 	s = LoadTextureTGA("Stars.tga");
+
+	a = LoadTextureTGA("AlbedoTex.tga");
 
 	glutDisplayFunc(GLUTCallbacks::Display);
 	glutKeyboardFunc(KeyboardInputDown);
@@ -827,6 +838,8 @@ void OpenGL::Display()
 	DrawPuzzle7();
 	DrawPuzzle8();
 	DrawPuzzle9();
+
+	model.draw(a);
 
 	glFlush();
 
