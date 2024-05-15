@@ -72,10 +72,10 @@ float rotatePuzzle7 = 0;
 float rotatePuzzle8 = 0;
 float rotatePuzzle9 = 0;
 
-float rotationRoof1 = 0;
-float rotationRoof2 = 0;
-float rotationRoof3 = 0;
-float rotationRoof4 = 0;
+float translateRoof1 = 0;
+float translateRoof2 = 0;
+float translateRoof3 = 0;
+float translateRoof4 = 0;
 
 float fx = 0.2;
 float bx = -fx;
@@ -111,6 +111,8 @@ GLuint r;
 GLuint b;
 GLuint u;
 GLuint d;
+
+GLuint s;
 
 string CubeMap[]
 {
@@ -421,6 +423,7 @@ void PuzzleMechanic()
 
 void ObservatoryHandler()
 {
+	int counter = 0;
 	while (true)
 	{
 		while (onObservatory)
@@ -429,15 +432,20 @@ void ObservatoryHandler()
 			{
 				freezePlayer = true;
 				isEnterPressed = false;
+				if (counter == 0)
+				{
+					skyboxCullingEdge += 20;
+					counter++;
+				}
 			}
 			else if (rotatePlayerForCutscene < -80)
 			{
-				if (rotationRoof1 < 90)
+				if (translateRoof1 < 90)
 				{
-					rotationRoof1 += 0.05;
-					rotationRoof2 += 0.05;
-					rotationRoof3 += 0.05;
-					rotationRoof4 -= 0.05;
+					translateRoof1 += 0.05;
+					translateRoof2 += 0.05;
+					translateRoof3 += 0.05;
+					translateRoof4 -= 0.05;
 					this_thread::sleep_for(chrono::milliseconds(50));
 				}
 			}
@@ -711,6 +719,8 @@ OpenGL::OpenGL(int argc, char* argv[])
 	u = LoadTextureTGA("yellowcloud_up.tga");
 	d = LoadTextureTGA("yellowcloud_dn.tga");
 
+	s = LoadTextureTGA("Stars.tga");
+
 	glutDisplayFunc(GLUTCallbacks::Display);
 	glutKeyboardFunc(KeyboardInputDown);
 	glutKeyboardUpFunc(KeyboardInputUp);
@@ -825,7 +835,10 @@ void OpenGL::Display()
 
 void OpenGL::DrawPolygon0()
 {
-	glBindTexture(GL_TEXTURE_2D, f);
+	if (!freezePlayer)
+	{
+		glBindTexture(GL_TEXTURE_2D, f);
+	}
 
 	glBegin(GL_QUADS);
 	{
@@ -842,7 +855,10 @@ void OpenGL::DrawPolygon0()
 		glEnd();
 	}
 
-	glBindTexture(GL_TEXTURE_2D, l);
+	if (!freezePlayer)
+	{
+		glBindTexture(GL_TEXTURE_2D, l);
+	}
 
 	glBegin(GL_QUADS);
 	{
@@ -859,7 +875,10 @@ void OpenGL::DrawPolygon0()
 		glEnd();
 	}
 
-	glBindTexture(GL_TEXTURE_2D, b);
+	if (!freezePlayer)
+	{
+		glBindTexture(GL_TEXTURE_2D, b);
+	}
 
 	glBegin(GL_QUADS);
 	{
@@ -876,7 +895,10 @@ void OpenGL::DrawPolygon0()
 		glEnd();
 	}
 
-	glBindTexture(GL_TEXTURE_2D, r);
+	if (!freezePlayer)
+	{
+		glBindTexture(GL_TEXTURE_2D, r);
+	}
 
 	glBegin(GL_QUADS);
 	{
@@ -893,7 +915,10 @@ void OpenGL::DrawPolygon0()
 		glEnd();
 	}
 
-	glBindTexture(GL_TEXTURE_2D, d);
+	if (!freezePlayer)
+	{
+		glBindTexture(GL_TEXTURE_2D, d);
+	}
 
 	glBegin(GL_QUADS);
 	{
@@ -910,7 +935,14 @@ void OpenGL::DrawPolygon0()
 		glEnd();
 	}
 
-	glBindTexture(GL_TEXTURE_2D, u);
+	if (freezePlayer)
+	{
+		glBindTexture(GL_TEXTURE_2D, s);
+	}
+	else 
+	{
+		glBindTexture(GL_TEXTURE_2D, u);
+	}
 
 	glBegin(GL_QUADS);
 	{
@@ -926,7 +958,6 @@ void OpenGL::DrawPolygon0()
 
 		glEnd();
 	}
-
 
 	glPopMatrix();
 }
@@ -2031,8 +2062,8 @@ void OpenGL::DrawObservatory()
 		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(10, -4, -70);
 		glVertex3f(10, -4, -50);
-		glVertex3f(10, 20, -50);
-		glVertex3f(10, 20, -70);
+		glVertex3f(10, 10, -50);
+		glVertex3f(10, 10, -70);
 
 		glEnd();
 	}
@@ -2042,8 +2073,8 @@ void OpenGL::DrawObservatory()
 		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(-10, -4, -70);
 		glVertex3f(-10, -4, -50);
-		glVertex3f(-10, 20, -50);
-		glVertex3f(-10, 20, -70);
+		glVertex3f(-10, 10, -50);
+		glVertex3f(-10, 10, -70);
 
 		glEnd();
 	}
@@ -2053,8 +2084,8 @@ void OpenGL::DrawObservatory()
 		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(-10, -4, -50);
 		glVertex3f(-3, -4, -50);
-		glVertex3f(-3, 20, -50);
-		glVertex3f(-10, 20, -50);
+		glVertex3f(-3, 10, -50);
+		glVertex3f(-10, 10, -50);
 
 		glEnd();
 	}
@@ -2064,8 +2095,8 @@ void OpenGL::DrawObservatory()
 		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(10, -4, -50);
 		glVertex3f(3, -4, -50);
-		glVertex3f(3, 20, -50);
-		glVertex3f(10, 20, -50);
+		glVertex3f(3, 10, -50);
+		glVertex3f(10, 10, -50);
 
 		glEnd();
 	}
@@ -2075,8 +2106,8 @@ void OpenGL::DrawObservatory()
 		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(3, 6, -50);
 		glVertex3f(-3, 6, -50);
-		glVertex3f(-3, 20, -50);
-		glVertex3f(3, 20, -50);
+		glVertex3f(-3, 10, -50);
+		glVertex3f(3, 10, -50);
 
 		glEnd();
 	}
@@ -2086,8 +2117,8 @@ void OpenGL::DrawObservatory()
 		glColor4f(0.3, 0.3, 0.3, 1);
 		glVertex3f(10, -4, -70);
 		glVertex3f(-10, -4, -70);
-		glVertex3f(-10, 20, -70);
-		glVertex3f(10, 20, -70);
+		glVertex3f(-10, 10, -70);
+		glVertex3f(10, 10, -70);
 
 		glEnd();
 	}
@@ -2110,15 +2141,13 @@ void OpenGL::DrawObservatoryRoof()
 {
 	glPushMatrix();
 
-	glTranslatef(0, -23.33, 53.33);
-	glRotatef(rotationRoof1, 1, 0, 0);
-	glTranslatef(0, 23.33,-53.33);
+	glTranslatef(0, 0, translateRoof1);
 	glBegin(GL_POLYGON);
 	{
 		glColor4f(0.25, 0.25, 0.25, 1);
-		glVertex3f(10, 20, -50);
-		glVertex3f(-10, 20, -50);
-		glVertex3f(0, 30, -60);
+		glVertex3f(10, 10, -50);
+		glVertex3f(-10, 10, -50);
+		glVertex3f(0, 20, -60);
 
 		glEnd();
 	}
@@ -2127,15 +2156,13 @@ void OpenGL::DrawObservatoryRoof()
 
 	glPushMatrix();
 
-	glTranslatef(0, -23.33, 53.3);
-	glRotatef(rotationRoof2, 0, 0, -1);
-	glTranslatef(0, 23.33, -53.3);
+	glTranslatef(translateRoof2, 0, 0);
 	glBegin(GL_POLYGON);
 	{
 		glColor4f(0.2, 0.2, 0.2, 1);
-		glVertex3f(10, 20, -50);
-		glVertex3f(10, 20, -70);
-		glVertex3f(0, 30, -60);
+		glVertex3f(10, 10, -50);
+		glVertex3f(10, 10, -70);
+		glVertex3f(0, 20, -60);
 
 		glEnd();
 	}
@@ -2144,15 +2171,13 @@ void OpenGL::DrawObservatoryRoof()
 
 	glPushMatrix();
 
-	glTranslatef(0, -23.33, 53.3);
-	glRotatef(rotationRoof3, 0, 0, 1);
-	glTranslatef(0, 23.33, -53.3);
+	glTranslatef(-translateRoof3, 0, 0);
 	glBegin(GL_POLYGON);
 	{
 		glColor4f(0.2, 0.2, 0.2, 1);
-		glVertex3f(-10, 20, -50);
-		glVertex3f(-10, 20, -70);
-		glVertex3f(0, 30, -60);
+		glVertex3f(-10, 10, -50);
+		glVertex3f(-10, 10, -70);
+		glVertex3f(0, 20, -60);
 
 		glEnd();
 	}
@@ -2161,15 +2186,13 @@ void OpenGL::DrawObservatoryRoof()
 
 	glPushMatrix();
 
-	glTranslatef(0, -23.33, 53.3);
-	glRotatef(rotationRoof4, 1, 0, 0);
-	glTranslatef(0, 23.33, -53.3);
+	glTranslatef(0, 0,  translateRoof4);
 	glBegin(GL_POLYGON);
 	{
 		glColor4f(0.25, 0.25, 0.25, 1);
-		glVertex3f(10, 20, -70);
-		glVertex3f(-10, 20, -70);
-		glVertex3f(0, 30, -60);
+		glVertex3f(10, 10, -70);
+		glVertex3f(-10, 10, -70);
+		glVertex3f(0, 20, -60);
 
 		glEnd();
 	}
