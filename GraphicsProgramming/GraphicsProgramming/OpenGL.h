@@ -384,15 +384,17 @@ public:
         faces.clear();
     }
 
-    void draw(GLuint &a) 
+    void draw(GLuint &a, float shipX, float shipY, float shipZ)
     {
+        GLfloat modelColor[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, a);
 
         glPushMatrix();
+        glRotatef(45, 0, 1, 0);
+        glTranslatef(shipX, shipY, shipZ);
 
-        glTranslatef(2, -2, -20);
-
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, modelColor);
         glCallList(list);
 
         glPopMatrix();

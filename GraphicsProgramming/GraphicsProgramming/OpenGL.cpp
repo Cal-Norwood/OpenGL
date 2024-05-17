@@ -45,6 +45,9 @@ float cameraPosY = 0;
 float cameraSpeedZ = 0;
 
 float pos_x = 0, pos_y = 0, pos_z = 0;
+float shipPosX = 30;
+float shipPosY = 70;
+float shipPosZ = 0;
 
 float cameraOffsetX = 0;
 float cameraOffsetY = 0;
@@ -329,6 +332,19 @@ int LoadTextureTGA(const char* textureFileName)
 	return ID;
 }
 
+void renderBitmapString(float x, float y, float z, void* font, const char* string) 
+{
+	glPushMatrix();
+	glColor4f(0, 1, 0, 1);
+	const unsigned char* c = reinterpret_cast<const unsigned char*>(string);
+	glRasterPos3f(x, y, z);
+	//glDisable(GL_LIGHTING);
+	glDisable(GL_TEXTURE_2D);
+	glutBitmapString(font, c);
+	glEnable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
+
 void FlipPuzzleSquare(int x, int y)
 {
 	isFlipped[y][x] = true;
@@ -442,7 +458,8 @@ void ObservatoryHandler()
 				isEnterPressed = false;
 				if (counter == 0)
 				{
-					skyboxCullingEdge += 20;
+					skyboxCullingEdge += 40;
+					skyboxCullingEdgeForward += 80;
 					counter++;
 		 		}
 			}
@@ -450,11 +467,13 @@ void ObservatoryHandler()
 			{
 				if (translateRoof1 < 90)
 				{
-					translateRoof1 += 0.05;
-					translateRoof2 += 0.05;
-					translateRoof3 += 0.05;
-					translateRoof4 -= 0.05;
+					translateRoof1 += 0.1;
+					translateRoof2 += 0.1;
+					translateRoof3 += 0.1;
+					translateRoof4 -= 0.1;
 					this_thread::sleep_for(chrono::milliseconds(50));
+					shipPosZ -= 0.75;
+					//shipPosX -= 0.55;
 				}
 			}
 		}
@@ -819,6 +838,14 @@ void OpenGL::Display()
 	cameraOffsetX -= localSpeedX;
 	cameraOffsetZ += localSpeedZ;
 
+	glMatrixMode(GL_PROJECTION);
+	glColor4f(1.0f, 1.0f, 1.0f, 1);
+	if (onPuzzle)
+	{
+		renderBitmapString(-2.5, -2, -30, GLUT_BITMAP_HELVETICA_18, "Use The Arrow Keys To Select A Tile And Press Enter To Flip. Match All Colours");
+	}
+	glMatrixMode(GL_MODELVIEW);
+
 	DrawPolygon0();
 	DrawPolygon();
 	//DrawPolygon1();
@@ -839,7 +866,7 @@ void OpenGL::Display()
 	DrawPuzzle8();
 	DrawPuzzle9();
 
-	model.draw(a);
+	model.draw(a, shipPosX, shipPosY, shipPosZ);
 
 	glFlush();
 
@@ -851,6 +878,10 @@ void OpenGL::DrawPolygon0()
 	if (!freezePlayer)
 	{
 		glBindTexture(GL_TEXTURE_2D, f);
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, s);
 	}
 
 	glBegin(GL_QUADS);
@@ -948,11 +979,7 @@ void OpenGL::DrawPolygon0()
 		glEnd();
 	}
 
-	if (freezePlayer)
-	{
-		glBindTexture(GL_TEXTURE_2D, s);
-	}
-	else 
+	if (!freezePlayer)
 	{
 		glBindTexture(GL_TEXTURE_2D, u);
 	}
